@@ -10,9 +10,11 @@ interface Props {
 
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: 'bounties', href: '/' },
+  { label: 'live', href: '/live' },
   { label: 'personas', href: '/personas' },
   { label: 'agents', href: '/agents' },
-  { label: 'my', href: '/my' },
+  { label: 'repos', href: '/repos' },
+  { label: 'docs', href: '/docs' },
   { label: 'roadmap', href: '/roadmap' },
 ]
 
