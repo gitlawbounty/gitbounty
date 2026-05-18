@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useBounties } from '@/hooks/useBounties'
 import { useOffChainBounties } from '@/hooks/useOffChainBounties'
 import { useEvents } from '@/hooks/useEvents'
+import { useDidRegistrations } from '@/hooks/useDidRegistrations'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { BlinkingCursor } from '@/components/ui/BlinkingCursor'
@@ -18,6 +19,8 @@ type FeedKind =
   | 'BountyCancelled'
   | 'BountyDisputed'
   | 'OffChainBounty'
+  | 'DIDRegistered'
+  | 'RepoSeen'
 
 interface FeedItem {
   id: string
@@ -33,13 +36,15 @@ interface FeedItem {
 }
 
 const KIND_LABEL: Record<FeedKind, string> = {
-  BountyCreated: 'posted',
-  BountyClaimed: 'claimed',
-  BountySubmitted: 'submitted',
-  BountyCompleted: 'completed',
-  BountyCancelled: 'cancelled',
-  BountyDisputed: 'disputed',
-  OffChainBounty: 'gitlawb network',
+  BountyCreated: 'bounty posted',
+  BountyClaimed: 'bounty claimed',
+  BountySubmitted: 'pr submitted',
+  BountyCompleted: 'bounty completed',
+  BountyCancelled: 'bounty cancelled',
+  BountyDisputed: 'bounty disputed',
+  OffChainBounty: 'gitlawb bounty',
+  DIDRegistered: 'agent registered',
+  RepoSeen: 'repo active',
 }
 
 const KIND_COLOR: Record<FeedKind, string> = {
@@ -50,6 +55,8 @@ const KIND_COLOR: Record<FeedKind, string> = {
   BountyCancelled: 'text-status-cancelled',
   BountyDisputed: 'text-status-disputed',
   OffChainBounty: 'text-muted',
+  DIDRegistered: 'text-status-completed',
+  RepoSeen: 'text-muted',
 }
 
 const KIND_GLYPH: Record<FeedKind, string> = {
@@ -60,12 +67,15 @@ const KIND_GLYPH: Record<FeedKind, string> = {
   BountyCancelled: '✗',
   BountyDisputed: '!',
   OffChainBounty: '◇',
+  DIDRegistered: '◉',
+  RepoSeen: '▢',
 }
 
 export default function LivePage() {
   const { data: onChain = [] } = useBounties()
   const { data: offSnap } = useOffChainBounties()
   const { data: rawEvents } = useEvents(50)
+  const { data: didSnap } = useDidRegistrations()
   const [filterKind, setFilterKind] = useState<FeedKind | 'all'>('all')
   const [searchDid, setSearchDid] = useState('')
 
@@ -106,8 +116,43 @@ export default function LivePage() {
       })
     }
 
+    // On-chain DID registrations — new agents joining the network
+    for (const did of didSnap?.events ?? []) {
+      out.push({
+        id: `did-${did.txHash}`,
+        kind: 'DIDRegistered',
+        source: 'on-chain',
+        title: `new agent: ${did.did.replace(/^did:[^:]+:/, '').slice(0, 12)}…`,
+        detail: `registered on GitlawbDIDRegistry · owner ${did.owner.slice(0, 8)}…`,
+        did: did.did,
+        ageLabel: '',
+        timestampMs: Number(did.blockNumber) * 1000,
+        link: `/agent/${encodeURIComponent(did.did.replace(/^did:[^:]+:/, ''))}`,
+      })
+    }
+
+    // Repos appearing in bounty data → distinct repos as "active" events
+    const seenRepos = new Set<string>()
+    for (const b of offSnap?.bounties ?? []) {
+      if (!b.did || !b.repoName) continue
+      const key = `${b.did}/${b.repoName}`
+      if (seenRepos.has(key)) continue
+      seenRepos.add(key)
+      out.push({
+        id: `repo-${key}`,
+        kind: 'RepoSeen',
+        source: 'off-chain',
+        title: `repo active: ${b.repoName}`,
+        detail: `${b.did.slice(0, 12)}…/${b.repoName} · bounty volume detected`,
+        did: b.did,
+        ageLabel: b.ageLabel,
+        timestampMs: 0,
+        link: `https://gitlawb.com/${b.did}/${b.repoName}`,
+      })
+    }
+
     return out.sort((a, b) => b.timestampMs - a.timestampMs)
-  }, [onChain, offSnap, rawEvents])
+  }, [onChain, offSnap, rawEvents, didSnap])
 
   const filtered = items.filter((i) => {
     if (filterKind !== 'all' && i.kind !== filterKind) return false
@@ -153,7 +198,7 @@ export default function LivePage() {
         {/* Filter pills */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="text-muted mr-1">event:</span>
-          {(['all', 'BountyCreated', 'BountyClaimed', 'BountyCompleted', 'OffChainBounty'] as const).map(
+          {(['all', 'OffChainBounty', 'DIDRegistered', 'RepoSeen', 'BountyCreated', 'BountyClaimed', 'BountyCompleted'] as const).map(
             (k) => (
               <button
                 key={k}
