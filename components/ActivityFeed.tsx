@@ -30,13 +30,13 @@ interface FeedItem {
 }
 
 const KIND_GLYPH: Record<FeedKind, string> = {
-  'agent-registered': '◉',
-  'repo-updated': '▢',
+  'agent-registered': '◆',
+  'repo-updated': '◇',
   'bounty-posted': '+',
   'bounty-claimed': '◐',
   'bounty-completed': '✓',
   'commit-pushed': '→',
-  'onchain-event': '⌬',
+  'onchain-event': '⬢',
 }
 
 const KIND_COLOR: Record<FeedKind, string> = {
@@ -47,6 +47,16 @@ const KIND_COLOR: Record<FeedKind, string> = {
   'bounty-completed': 'text-status-completed',
   'commit-pushed': 'text-accent',
   'onchain-event': 'text-accent',
+}
+
+const KIND_TAG: Record<FeedKind, string> = {
+  'agent-registered': 'agent',
+  'repo-updated': 'repo',
+  'bounty-posted': 'bounty',
+  'bounty-claimed': 'bounty',
+  'bounty-completed': 'bounty',
+  'commit-pushed': 'commit',
+  'onchain-event': 'on-chain',
 }
 
 function ageOf(iso: string | null | undefined): { label: string; ms: number } {
@@ -172,69 +182,94 @@ export function ActivityFeed() {
     return () => clearTimeout(t)
   }, [fresh.size])
 
-  if (items.length === 0) {
-    return (
-      <div className="space-y-2 text-sm font-mono">
-        <div className="text-muted uppercase text-xs tracking-wider mb-2">activity feed</div>
-        <BlinkingCursor label="$ tuning in to gitlawb" />
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-1 text-xs font-mono">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-muted uppercase text-xs tracking-wider">activity feed</div>
-        <div className="flex items-center gap-1.5 text-[10px] text-accent uppercase tracking-[0.15em]">
+    <div className="border border-border rounded-lg bg-surface/30 overflow-hidden font-mono">
+      {/* Header — sticky, compact */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-base/40">
+        <div className="flex items-baseline gap-2 text-[10px] uppercase tracking-[0.18em] text-muted">
+          <span>activity feed</span>
+          {items.length > 0 && <span className="text-accent">{items.length}</span>}
+        </div>
+        <div className="flex items-center gap-1.5 text-[9px] text-accent uppercase tracking-[0.2em]">
           <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
           live
         </div>
       </div>
-      {items.map((item) => {
-        const isNew = fresh.has(item.id)
-        const inner = (
-          <div
-            className={`flex items-start gap-2 py-1.5 px-2 -mx-2 rounded transition ${
-              isNew ? 'bg-accent/10 border-l-2 border-accent pl-3' : 'hover:bg-border/30'
-            }`}
-          >
-            <span className={`shrink-0 ${KIND_COLOR[item.kind]}`}>{KIND_GLYPH[item.kind]}</span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-1 text-[10px] uppercase tracking-[0.15em] text-muted">
-                <span className={KIND_COLOR[item.kind]}>{item.label}</span>
-                {item.ageLabel && (
-                  <>
-                    <span>·</span>
-                    <span>{item.ageLabel}</span>
-                  </>
-                )}
-                {isNew && (
-                  <span className="ml-1 px-1 bg-accent text-base text-[8px] font-semibold tracking-[0.2em] animate-pulse">
-                    NEW
-                  </span>
-                )}
-              </div>
-              <div className="text-primary truncate text-xs mt-0.5">{item.detail}</div>
-            </div>
+
+      {/* Scrollable stream — fixed height so the box stays small */}
+      <div
+        className="overflow-y-auto activity-scroll"
+        style={{ maxHeight: 360 }}
+      >
+        {items.length === 0 ? (
+          <div className="px-3 py-6">
+            <BlinkingCursor label="$ tuning in to gitlawb" />
           </div>
-        )
-        if (!item.href) return <div key={item.id}>{inner}</div>
-        if (item.external) {
-          return (
-            <a key={item.id} href={item.href} target="_blank" rel="noopener noreferrer" className="block">
-              {inner}
-            </a>
-          )
-        }
-        return (
-          <Link key={item.id} href={item.href} className="block">
-            {inner}
-          </Link>
-        )
-      })}
+        ) : (
+          <div className="divide-y divide-border/40">
+            {items.map((item) => {
+              const isNew = fresh.has(item.id)
+              const inner = (
+                <div
+                  className={`flex items-baseline gap-2 py-1.5 px-3 transition leading-tight ${
+                    isNew
+                      ? 'bg-accent/8 border-l-2 border-accent pl-[10px]'
+                      : 'hover:bg-border/20 border-l-2 border-transparent'
+                  }`}
+                >
+                  <span
+                    className={`shrink-0 text-[11px] ${KIND_COLOR[item.kind]}`}
+                    style={{ lineHeight: '14px' }}
+                  >
+                    {KIND_GLYPH[item.kind]}
+                  </span>
+                  <span
+                    className={`shrink-0 text-[9px] uppercase tracking-[0.18em] ${KIND_COLOR[item.kind]}`}
+                    style={{ minWidth: 38 }}
+                  >
+                    {KIND_TAG[item.kind]}
+                  </span>
+                  <span className="shrink-0 text-[9px] text-muted/70 uppercase tracking-[0.12em]">
+                    {item.ageLabel || '—'}
+                  </span>
+                  <span className="flex-1 min-w-0 text-[11px] text-primary truncate">
+                    {item.detail}
+                  </span>
+                  {isNew && (
+                    <span className="shrink-0 text-[8px] tracking-[0.2em] text-accent uppercase animate-pulse">
+                      new
+                    </span>
+                  )}
+                </div>
+              )
+              if (!item.href) return <div key={item.id}>{inner}</div>
+              if (item.external) {
+                return (
+                  <a
+                    key={item.id}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    {inner}
+                  </a>
+                )
+              }
+              return (
+                <Link key={item.id} href={item.href} className="block">
+                  {inner}
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Footer — full stream link */}
       <Link
         href="/live"
-        className="block text-center pt-3 text-[10px] uppercase tracking-[0.2em] text-muted hover:text-accent"
+        className="block text-center py-2 border-t border-border text-[9px] uppercase tracking-[0.22em] text-muted hover:text-accent hover:bg-border/20 transition"
       >
         full stream →
       </Link>
