@@ -1,6 +1,29 @@
 import type { OffChainBounty, OffChainStatus, ScrapedBountySnapshot } from './types'
+import { fetchNodeBounties, bareDid, ageLabel, type NodeBounty } from '@/lib/gitlawb-node'
 
 const BOUNTIES_URL = 'https://gitlawb.com/bounties'
+
+/** Map a NodeBounty (from the gitlawb node JSON API) to our OffChainBounty shape. */
+function nodeToOffChain(b: NodeBounty, fetchedAt: string): OffChainBounty {
+  const status: OffChainStatus = STATUSES.includes(b.status as OffChainStatus)
+    ? (b.status as OffChainStatus)
+    : 'unknown'
+  const amountNumeric = Number(b.amount ?? 0)
+  return {
+    source: 'offchain',
+    uuid: b.id,
+    title: b.title,
+    did: bareDid(b.creator_did ?? ''),
+    repoOwner: bareDid(b.repo_owner ?? ''),
+    repoName: b.repo_name ?? '',
+    amount: `${amountNumeric.toLocaleString('en-US')} $GITLAWB`,
+    amountNumeric,
+    status,
+    ageLabel: ageLabel(b.created_at),
+    url: `https://gitlawb.com/bounties/${b.id}`,
+    fetchedAt,
+  }
+}
 
 const STATUSES: OffChainStatus[] = [
   'open',
@@ -118,16 +141,35 @@ export function parseBountiesHtml(html: string): OffChainBounty[] {
   return results
 }
 
-/** Fetch + parse gitlawb.com /bounties. */
+/**
+ * Fetch off-chain bounties. Prefers the official JSON API at node.gitlawb.com,
+ * falls back to scraping gitlawb.com/bounties HTML if the node is unreachable.
+ *
+ * The JSON path is the same source @Gitlawbterminal uses — full firehose with
+ * real timestamps, claimant DIDs, and structured status. HTML scrape stays as
+ * a safety net so the site stays alive if the node API ever goes down.
+ */
 export async function fetchOffChainBounties(): Promise<ScrapedBountySnapshot> {
   const fetchedAt = new Date().toISOString()
+
+  // ── Primary: node.gitlawb.com/api/v1/bounties ──
+  const nodeSnap = await fetchNodeBounties()
+  if (!nodeSnap.error && nodeSnap.bounties.length > 0) {
+    return {
+      bounties: nodeSnap.bounties.map((b) => nodeToOffChain(b, fetchedAt)),
+      fetchedAt,
+      source: 'gitlawb.com',
+      count: nodeSnap.bounties.length,
+    }
+  }
+
+  // ── Fallback: HTML scrape ──
   try {
     const res = await fetch(BOUNTIES_URL, {
       headers: {
         'User-Agent': 'gitbounty-terminal/0.1 (+https://github.com/Gitlawbounty)',
         Accept: 'text/html',
       },
-      // 60s edge cache from upstream when possible
       next: { revalidate: 300 },
     })
     if (!res.ok) {
@@ -136,7 +178,7 @@ export async function fetchOffChainBounties(): Promise<ScrapedBountySnapshot> {
         fetchedAt,
         source: 'gitlawb.com',
         count: 0,
-        error: `upstream ${res.status}`,
+        error: nodeSnap.error ?? `upstream ${res.status}`,
       }
     }
     const html = await res.text()
@@ -153,7 +195,7 @@ export async function fetchOffChainBounties(): Promise<ScrapedBountySnapshot> {
       fetchedAt,
       source: 'gitlawb.com',
       count: 0,
-      error: String(err).slice(0, 200),
+      error: nodeSnap.error ?? String(err).slice(0, 200),
     }
   }
 }
