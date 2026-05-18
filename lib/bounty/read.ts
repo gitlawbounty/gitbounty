@@ -13,9 +13,11 @@ const client = createPublicClient({
 
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000' as const
 
-// Public Base Sepolia RPC limits `eth_getLogs` to a 2000-block range. Alchemy/Infura
-// allow larger ranges but we chunk for compatibility with any provider.
-const MAX_BLOCK_RANGE = 1900n
+// Block-range chunk size. Public Sepolia caps eth_getLogs at 2000 blocks;
+// Alchemy free tier allows up to 10,000. We default to 9500 (Alchemy-friendly,
+// 5x fewer requests). If a public RPC is used, queries past 2000 will error —
+// in that case lower this constant or set a smaller `HORIZON` below.
+const MAX_BLOCK_RANGE = 9500n
 
 type AnyContractEvent = {
   args: Record<string, unknown>
