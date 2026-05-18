@@ -64,7 +64,7 @@ const COMMON_HEADERS = {
   Accept: 'application/json',
 }
 
-async function fetchJson<T>(path: string, revalidate = 60): Promise<T> {
+async function fetchJson<T>(path: string, revalidate = 15): Promise<T> {
   const res = await fetch(`${NODE_BASE}${path}`, {
     headers: COMMON_HEADERS,
     next: { revalidate },
@@ -85,7 +85,7 @@ export interface BountiesSnapshot {
 export async function fetchNodeBounties(): Promise<BountiesSnapshot> {
   const fetchedAt = new Date().toISOString()
   try {
-    const data = await fetchJson<{ bounties: NodeBounty[] }>('/bounties', 60)
+    const data = await fetchJson<{ bounties: NodeBounty[] }>('/bounties', 15)
     const bounties = data.bounties ?? []
     return { bounties, count: bounties.length, fetchedAt }
   } catch (err) {
@@ -103,7 +103,7 @@ export interface AgentsSnapshot {
 export async function fetchNodeAgents(): Promise<AgentsSnapshot> {
   const fetchedAt = new Date().toISOString()
   try {
-    const data = await fetchJson<{ agents: NodeAgent[] }>('/agents', 60)
+    const data = await fetchJson<{ agents: NodeAgent[] }>('/agents', 15)
     const agents = data.agents ?? []
     return { agents, count: agents.length, fetchedAt }
   } catch (err) {
@@ -121,7 +121,7 @@ export interface ReposSnapshot {
 export async function fetchNodeRepos(): Promise<ReposSnapshot> {
   const fetchedAt = new Date().toISOString()
   try {
-    const data = await fetchJson<NodeRepo[] | { repos: NodeRepo[] }>('/repos', 60)
+    const data = await fetchJson<NodeRepo[] | { repos: NodeRepo[] }>('/repos', 15)
     const repos = Array.isArray(data) ? data : (data.repos ?? [])
     return { repos, count: repos.length, fetchedAt }
   } catch (err) {

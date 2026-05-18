@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { fetchNodeAgents, bareDid, ageLabel } from '@/lib/gitlawb-node'
 import { commonHeaders } from '@/lib/api/serialize'
 
-export const revalidate = 60
+export const revalidate = 10
 export const dynamic = 'force-dynamic'
 
 /**
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
     {
       headers: {
         ...commonHeaders('rpc'),
-        'Cache-Control': 's-maxage=60, stale-while-revalidate=300',
+        'Cache-Control': 's-maxage=10, stale-while-revalidate=60',
       },
     },
   )

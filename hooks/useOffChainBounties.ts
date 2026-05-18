@@ -13,6 +13,7 @@ export function useOffChainBounties() {
   return useQuery({
     queryKey: ['bounties-offchain'],
     queryFn: fetchOffChain,
-    staleTime: 5 * 60 * 1000, // 5 minutes — matches edge cache
+    staleTime: 15_000,
+    refetchInterval: 15_000, // real-time: poll every 15s for new bounties
   })
 }

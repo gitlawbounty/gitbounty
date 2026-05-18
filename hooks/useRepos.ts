@@ -17,6 +17,7 @@ export function useRepos() {
       if (!res.ok) throw new Error(`repos ${res.status}`)
       return res.json()
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10_000,
+    refetchInterval: 10_000, // real-time: poll every 10s
   })
 }
