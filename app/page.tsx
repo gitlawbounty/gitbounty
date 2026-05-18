@@ -7,7 +7,8 @@ import { ProtocolStats } from '@/components/ProtocolStats'
 import { BountyFilters, type StatusFilter, type Sort } from '@/components/BountyFilters'
 import { BountyCard } from '@/components/BountyCard'
 import { ActivityFeed } from '@/components/ActivityFeed'
-import { WalletButton } from '@/components/WalletButton'
+import { SiteHeader } from '@/components/SiteHeader'
+import { SiteFooter } from '@/components/SiteFooter'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { BlinkingCursor } from '@/components/ui/BlinkingCursor'
 import { BountyStatus } from '@/lib/bounty/types'
@@ -46,30 +47,13 @@ export default function Home() {
   }, [bounties, filters])
 
   return (
-    <main className="max-w-6xl mx-auto p-4 sm:p-8 space-y-6">
-      <header className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-xl">
-            <span className="text-accent">┌─</span> BOUNTY BEACON
-            <span className="text-muted text-sm ml-2">built on gitlawb</span>
-          </h1>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Link
-            href="/personas"
-            className="border border-border text-muted px-3 py-1.5 text-sm hover:border-accent hover:text-accent"
-          >
-            [ personas ◇ ]
-          </Link>
-          <Link
-            href="/post"
-            className="border border-accent text-accent px-3 py-1.5 text-sm hover:bg-accent hover:text-base"
-          >
-            [ post a bounty ]
-          </Link>
-          <WalletButton />
-        </div>
-      </header>
+    <main className="max-w-6xl mx-auto p-4 sm:p-8 space-y-8">
+      <SiteHeader activePath="/" />
+
+      {/* Command preamble */}
+      <div className="text-xs text-muted">
+        <span className="text-accent">$</span> gl bounty list --status=open
+      </div>
 
       <ProtocolStats />
 
@@ -116,6 +100,8 @@ export default function Home() {
           <ActivityFeed />
         </aside>
       </div>
+
+      <SiteFooter />
     </main>
   )
 }
