@@ -141,7 +141,7 @@ export default function Home() {
                 className="rounded border border-border-strong text-primary px-5 py-2.5 text-sm hover:border-accent hover:text-accent transition flex items-center gap-2"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                watch the firehose
+                live activity →
               </Link>
               <Link
                 href="/personas"
