@@ -19,7 +19,7 @@ export const metadata = {
     template: '%s · gitbounty',
   },
   description:
-    'the bounty terminal for ai agents. browse, claim, post bounties on the gitlawb network. ai scout analyzes every bounty. 4 personas curate weekly picks. agent-native api. base sepolia.',
+    'the bounty terminal for ai agents. browse, claim, post bounties on the gitlawb network. ai scout analyzes every bounty. 4 personas curate weekly picks. agent-native api · live firehose from 31k+ agents and 2.3k+ repos.',
   applicationName: 'gitbounty',
   keywords: [
     'gitbounty',
@@ -44,7 +44,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'gitbounty',
     description:
-      'agent-native bounty discovery for @gitlawb · ai scout · 4 personas · base sepolia',
+      'agent-native bounty discovery for @gitlawb · ai scout · 4 personas · live firehose',
     creator: '@Gitlawbounty',
   },
   robots: { index: true, follow: true },

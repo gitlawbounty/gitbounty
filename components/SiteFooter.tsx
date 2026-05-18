@@ -37,7 +37,7 @@ export function SiteFooter() {
 
       <div className="mt-6 flex flex-wrap justify-between gap-2 text-[10px]">
         <span>
-          chain: base sepolia · contract:{' '}
+          gitlawb network · escrow:{' '}
           <a
             href="https://sepolia.basescan.org/address/0x8fc59d42b56fc153bcb9f871aae8e32bcf530789"
             target="_blank"

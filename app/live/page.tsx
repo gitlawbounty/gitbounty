@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useBounties } from '@/hooks/useBounties'
 import { useOffChainBounties } from '@/hooks/useOffChainBounties'
 import { useEvents } from '@/hooks/useEvents'
 import { useDidRegistrations } from '@/hooks/useDidRegistrations'
 import { useNetworkEvents } from '@/hooks/useNetworkEvents'
+import { useNetworkAgents } from '@/hooks/useNetworkAgents'
+import { useNetworkRepos } from '@/hooks/useNetworkRepos'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { BlinkingCursor } from '@/components/ui/BlinkingCursor'
@@ -35,6 +37,7 @@ interface FeedItem {
   ageLabel: string
   timestampMs: number
   link?: string
+  isNew?: boolean // flipped true for items that appeared in the most recent poll
 }
 
 const KIND_LABEL: Record<FeedKind, string> = {
@@ -82,8 +85,15 @@ export default function LivePage() {
   const { data: rawEvents } = useEvents(50)
   const { data: didSnap } = useDidRegistrations()
   const { data: netSnap } = useNetworkEvents()
+  const { data: agentsSnap } = useNetworkAgents(100)
+  const { data: reposSnap } = useNetworkRepos(100, 'updated')
   const [filterKind, setFilterKind] = useState<FeedKind | 'all'>('all')
   const [searchDid, setSearchDid] = useState('')
+
+  // Track which item ids we've already shown — anything not in this set is "NEW"
+  const seenIds = useRef<Set<string>>(new Set())
+  // Bump a counter every time NEW items land — drives the live indicator flash
+  const [flashTick, setFlashTick] = useState(0)
 
   const items = useMemo<FeedItem[]>(() => {
     const out: FeedItem[] = []
@@ -227,21 +237,90 @@ export default function LivePage() {
       })
     }
 
-    return out.sort((a, b) => b.timestampMs - a.timestampMs)
-  }, [onChain, offSnap, rawEvents, didSnap, netSnap])
+    // Network-wide AGENT registrations (firehose from node.gitlawb.com/api/v1/agents)
+    // Real timestamps from registered_at — properly ordered, no synthetic guessing.
+    for (const a of agentsSnap?.agents ?? []) {
+      const ts = a.registeredAt ? new Date(a.registeredAt).getTime() : now
+      out.push({
+        id: `netagent-${a.did}`,
+        kind: 'DIDRegistered',
+        source: 'off-chain',
+        title: `new agent: ${a.did.slice(0, 16)}…`,
+        detail: `registered on gitlawb network · trust ${a.trustScore.toFixed(2)} · caps: ${(a.capabilities ?? []).slice(0, 3).join(', ')}`,
+        did: a.did,
+        ageLabel: a.registeredAgo,
+        timestampMs: ts,
+        link: `/agent/${encodeURIComponent(a.did)}`,
+      })
+    }
 
-  const filtered = items.filter((i) => {
+    // Network-wide REPO updates (firehose from node.gitlawb.com/api/v1/repos)
+    for (const r of reposSnap?.repos ?? []) {
+      const ts = r.updatedAt ? new Date(r.updatedAt).getTime() : now
+      out.push({
+        id: `netrepo-${r.owner}-${r.name}`,
+        kind: 'RepoSeen',
+        source: 'off-chain',
+        title: `repo updated: ${r.name}`,
+        detail: `${r.owner.slice(0, 12)}…/${r.name}${r.starCount ? ` · ★${r.starCount}` : ''}${r.description ? ` · ${r.description.slice(0, 60)}` : ''}`,
+        did: r.owner,
+        ageLabel: r.updatedAgo,
+        timestampMs: ts,
+        link: r.profileUrl,
+      })
+    }
+
+    return out.sort((a, b) => b.timestampMs - a.timestampMs)
+  }, [onChain, offSnap, rawEvents, didSnap, netSnap, agentsSnap, reposSnap])
+
+  // Diff against previous render — flag freshly-appeared items as isNew.
+  // First render: everything goes into seenIds without flashing (would be noise).
+  const itemsWithNewFlag = useMemo<FeedItem[]>(() => {
+    const isFirstRender = seenIds.current.size === 0
+    let freshCount = 0
+    const out = items.map((item) => {
+      if (seenIds.current.has(item.id)) return item
+      seenIds.current.add(item.id)
+      if (isFirstRender) return item
+      freshCount += 1
+      return { ...item, isNew: true }
+    })
+    if (freshCount > 0) {
+      // Defer the flash bump to after render to avoid setState-in-render warnings
+      queueMicrotask(() => setFlashTick((t) => t + 1))
+    }
+    return out
+  }, [items])
+
+  // Auto-clear isNew flag after 15s so the badge fades
+  useEffect(() => {
+    if (!itemsWithNewFlag.some((i) => i.isNew)) return
+    const t = setTimeout(() => setFlashTick((tick) => tick + 1), 15_000)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flashTick])
+
+  // Items are stale-marked once they pass through itemsWithNewFlag again on next poll.
+  // We override isNew → false here once the badge timer expires.
+  const ageOutCutoff = Date.now() - 15_000
+  const displayItems = itemsWithNewFlag.map((i) =>
+    i.isNew && i.timestampMs < ageOutCutoff ? { ...i, isNew: false } : i,
+  )
+
+  const filtered = displayItems.filter((i) => {
     if (filterKind !== 'all' && i.kind !== filterKind) return false
     if (searchDid && !(i.did ?? '').toLowerCase().includes(searchDid.toLowerCase())) return false
     return true
   })
 
-  // Simulated "live" indicator pulsing
+  // "live" indicator pulsing — flashes faster when new items just arrived
   const [pulse, setPulse] = useState(false)
+  const newItemCount = filtered.filter((i) => i.isNew).length
   useEffect(() => {
-    const t = setInterval(() => setPulse((p) => !p), 1500)
+    const interval = newItemCount > 0 ? 400 : 1500 // flash fast on new events
+    const t = setInterval(() => setPulse((p) => !p), interval)
     return () => clearInterval(t)
-  }, [])
+  }, [newItemCount])
 
   return (
     <div className="min-h-screen">
@@ -337,6 +416,11 @@ function FeedRow({ item }: { item: FeedItem }) {
               <span>{item.ageLabel}</span>
             </>
           )}
+          {item.isNew && (
+            <span className="ml-1 px-1.5 py-0.5 text-[9px] bg-accent text-base font-semibold tracking-[0.2em] animate-pulse">
+              NEW
+            </span>
+          )}
         </div>
         <div className="text-sm text-primary truncate mt-0.5">{item.title}</div>
         <div className="text-[11px] text-muted truncate">{item.detail}</div>
@@ -347,8 +431,9 @@ function FeedRow({ item }: { item: FeedItem }) {
     </>
   )
 
-  const className =
-    'flex items-start gap-3 bg-surface/40 hover:bg-surface border border-border hover:border-border-strong rounded-lg p-3 transition'
+  const className = `flex items-start gap-3 ${
+    item.isNew ? 'bg-accent/5 border-accent/60' : 'bg-surface/40 border-border hover:border-border-strong'
+  } hover:bg-surface border rounded-lg p-3 transition`
 
   if (!item.link) {
     return <div className={className}>{inner}</div>

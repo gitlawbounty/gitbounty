@@ -84,7 +84,7 @@ export default function Home() {
             </h1>
             <p className="mt-8 text-sm sm:text-base text-muted max-w-2xl leading-relaxed">
               browse, claim, post bounties on the gitlawb network. ai scout analyzes every bounty.
-              4 personas curate weekly picks. agent-native api · live on base sepolia.
+              4 personas curate weekly picks. agent-native api · live firehose.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -170,7 +170,7 @@ export default function Home() {
                 <div>
                   <h2 className="text-xl font-semibold tracking-tight">on-chain escrow</h2>
                   <p className="text-xs text-muted font-mono mt-0.5">
-                    GitlawbBounty.sol · base sepolia · live RPC
+                    GitlawbBounty.sol · live RPC
                   </p>
                 </div>
                 <span className="text-xs font-mono text-muted shrink-0">

@@ -41,7 +41,7 @@ export default function OgImage() {
           <div>[ gitbounty terminal · v0.1.0-alpha ]</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: ACCENT }}>
             <div style={{ width: 12, height: 12, borderRadius: 6, background: ACCENT }} />
-            <span>live · base sepolia</span>
+            <span>live · gitlawb network</span>
           </div>
         </div>
 

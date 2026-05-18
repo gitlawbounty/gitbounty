@@ -11,88 +11,58 @@ interface VersionEntry {
   version: string
   status: 'live' | 'next' | 'planned'
   title: string
-  bullets: string[]
+  summary: string
 }
 
 const VERSIONS: VersionEntry[] = [
   {
-    version: 'v0.1.0-alpha',
+    version: 'v0.1.0',
     status: 'live',
-    title: 'foundations + scout + personas',
-    bullets: [
-      'bounty ui core: browse · claim · post · approve · cancel · dispute',
-      'ai bounty scout: llm analyzes every bounty (difficulty · skills · alpha · pitfalls)',
-      '4 ai personas: sasha (solidity) · rana (rust) · frieren (frontend) · diego (degen)',
-      'agent-native json api (5 endpoints) + bankr-skills compatible',
-      'live websocket subscription · multicall batching · edge cache',
-      'base sepolia · v0.1.0-alpha',
-    ],
+    title: 'foundations · scout · 4 personas · firehose',
+    summary:
+      'browse / claim / post / approve · llm scout on every bounty · 4 ai personas (oracle · circuit · aurora · wager) · 17 cors-open json endpoints · bankr-skills compatible · node.gitlawb.com firehose integration · real-time agent + repo + commit detection',
   },
   {
     version: 'v0.2.0',
     status: 'next',
-    title: 'twitter & discord alerts',
-    bullets: [
-      'persona auto-tweets weekly picks',
-      'scout auto-tweets new bounty analyses',
-      'discord webhook integration',
-      'email digest opt-in',
-    ],
+    title: 'twitter + discord alerts',
+    summary:
+      'persona auto-tweets weekly picks · scout auto-tweets new bounty analyses · discord webhook · email digest opt-in',
   },
   {
     version: 'v0.3.0',
     status: 'planned',
     title: 'mcp server + skill marketplace',
-    bullets: [
-      'npm package @gitbounty/mcp — plug into claude desktop / cursor',
-      'expose all 4 personas as mcp tools',
-      'public skill marketplace (extend bankr-skills format)',
-      'third-party persona contributions',
-    ],
+    summary:
+      '@gitbounty/mcp npm package · all 4 personas exposed as mcp tools · public skill marketplace (extends bankr-skills) · third-party persona contributions',
   },
   {
     version: 'v0.4.0',
     status: 'planned',
     title: 'auto-hunter agent (beta)',
-    bullets: [
-      'persona auto-drafts PR proposals',
-      'user-approved auto-claim flow',
-      'reputation track per agent did',
-      'safety guards · revocation · slashing rules',
-    ],
+    summary:
+      'persona auto-drafts pr proposals · user-approved auto-claim flow over the json api · reputation track per did · safety guards + revocation',
   },
   {
     version: 'v0.5.0',
     status: 'planned',
     title: 'multi-agent tournament',
-    bullets: [
-      'agents compete on the same bounty',
-      'first-valid-pr wins',
-      'public scoreboard',
-      'persona vs persona analytics',
-    ],
+    summary:
+      'personas compete on the same bounty · first-valid-pr wins · public scoreboard · persona-vs-persona analytics',
   },
   {
     version: 'v0.6.0',
     status: 'planned',
     title: 'bounty yield vault (alpha)',
-    bullets: [
-      'stake $token → ai hunts bounties for the pool',
-      'yield distribution to stakers',
-      'strategy types: conservative · aggressive · niche',
-      'requires separate audited contract',
-    ],
+    summary:
+      'stake into the vault · ai personas hunt bounties for the pool · yield distribution to stakers · strategy variants (conservative / aggressive / niche)',
   },
   {
     version: 'v1.0.0',
     status: 'planned',
     title: 'mainnet drop',
-    bullets: [
-      'swap to base mainnet `GitlawbBounty` contract (currently TBD)',
-      'all layers (1-6) integrated',
-      'full skill marketplace live',
-      'external security audit complete',
-    ],
+    summary:
+      'swap escrow to base mainnet `GitlawbBounty` · 4 env vars flip · zero code change · external security audit complete · all layers (1-6) integrated',
   },
 ]
 
@@ -128,7 +98,7 @@ export default function RoadmapPage() {
         {/* timeline rail */}
         <div className="absolute left-[6px] top-2 bottom-2 w-px bg-border" aria-hidden />
 
-        <ol className="space-y-8">
+        <ol className="space-y-6">
           {VERSIONS.map((v) => (
             <li key={v.version} className="relative pl-8">
               <span
@@ -146,14 +116,7 @@ export default function RoadmapPage() {
                 </span>
                 <span className="text-muted text-sm">— {v.title}</span>
               </div>
-              <ul className="mt-3 space-y-1 text-sm text-muted">
-                {v.bullets.map((b, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-accent shrink-0">◇</span>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-2 text-sm text-muted leading-relaxed">{v.summary}</p>
             </li>
           ))}
         </ol>
@@ -170,7 +133,7 @@ export default function RoadmapPage() {
         </Link>{' '}
         for release notes. open feature requests at{' '}
         <Link
-          href="https://github.com/Gitlawbounty"
+          href="https://github.com/gitlawbounty"
           className="text-accent hover:underline"
         >
           github

@@ -26,7 +26,7 @@ export function SiteHeader({ activePath }: Props) {
         <span>[ gitbounty terminal · v0.1.0-alpha ]</span>
         <span className="flex items-center gap-2 text-accent">
           <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
-          live · base sepolia
+          live · gitlawb network
         </span>
       </div>
 
