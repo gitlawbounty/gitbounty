@@ -9,6 +9,7 @@ import { BlinkingCursor } from '@/components/ui/BlinkingCursor'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ChainGuard } from '@/components/ChainGuard'
 import { ActionPanel } from '@/components/ActionPanel'
+import { BountyScout } from '@/components/BountyScout'
 import { formatTokenAmount } from '@/lib/format/amount'
 import { truncateAddress } from '@/lib/format/address'
 import { timeAgo } from '@/lib/format/time'
@@ -79,6 +80,8 @@ export default function BountyDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       <BountyTimeline bounty={bounty} />
+
+      <BountyScout bountyId={bounty.id} />
 
       <ChainGuard>
         <ActionPanel bounty={bounty} />
