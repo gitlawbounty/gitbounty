@@ -6,6 +6,7 @@ import { useBounties } from '@/hooks/useBounties'
 import { useOffChainBounties } from '@/hooks/useOffChainBounties'
 import { useEvents } from '@/hooks/useEvents'
 import { useDidRegistrations } from '@/hooks/useDidRegistrations'
+import { useNetworkEvents } from '@/hooks/useNetworkEvents'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { BlinkingCursor } from '@/components/ui/BlinkingCursor'
@@ -21,6 +22,7 @@ type FeedKind =
   | 'OffChainBounty'
   | 'DIDRegistered'
   | 'RepoSeen'
+  | 'CommitPushed'
 
 interface FeedItem {
   id: string
@@ -45,6 +47,7 @@ const KIND_LABEL: Record<FeedKind, string> = {
   OffChainBounty: 'gitlawb bounty',
   DIDRegistered: 'agent registered',
   RepoSeen: 'repo active',
+  CommitPushed: 'commit pushed',
 }
 
 const KIND_COLOR: Record<FeedKind, string> = {
@@ -57,6 +60,7 @@ const KIND_COLOR: Record<FeedKind, string> = {
   OffChainBounty: 'text-muted',
   DIDRegistered: 'text-status-completed',
   RepoSeen: 'text-muted',
+  CommitPushed: 'text-accent',
 }
 
 const KIND_GLYPH: Record<FeedKind, string> = {
@@ -69,6 +73,7 @@ const KIND_GLYPH: Record<FeedKind, string> = {
   OffChainBounty: '◇',
   DIDRegistered: '◉',
   RepoSeen: '▢',
+  CommitPushed: '→',
 }
 
 export default function LivePage() {
@@ -76,6 +81,7 @@ export default function LivePage() {
   const { data: offSnap } = useOffChainBounties()
   const { data: rawEvents } = useEvents(50)
   const { data: didSnap } = useDidRegistrations()
+  const { data: netSnap } = useNetworkEvents()
   const [filterKind, setFilterKind] = useState<FeedKind | 'all'>('all')
   const [searchDid, setSearchDid] = useState('')
 
@@ -83,8 +89,9 @@ export default function LivePage() {
     const out: FeedItem[] = []
     const now = Date.now()
 
-    // Parse "14d ago" / "3h ago" / "30m ago" → real timestampMs
+    // Parse "14d ago" / "3h ago" / "30m ago" / "<1m ago" → real timestampMs
     const parseAge = (label: string): number => {
+      if (/^<1m/i.test(label)) return now - 30 * 1000
       const m = label.match(/(\d+)\s*([smhd])/i)
       if (!m) return now
       const n = Number.parseInt(m[1], 10)
@@ -205,8 +212,23 @@ export default function LivePage() {
       })
     }
 
+    // Real-time commits/ref-updates from gitlawb.com/node/events (the LIVE feed)
+    for (const ev of netSnap?.events ?? []) {
+      out.push({
+        id: `commit-${ev.commitHash}-${ev.did}-${ev.repoName}`,
+        kind: 'CommitPushed',
+        source: 'off-chain',
+        title: `${ev.repoName} · ${ev.commitHash}`,
+        detail: `${ev.did.slice(0, 12)}…/${ev.repoName} · ref-update gossipsub`,
+        did: ev.did,
+        ageLabel: ev.ageLabel,
+        timestampMs: parseAge(ev.ageLabel),
+        link: `https://gitlawb.com/${ev.did}/${ev.repoName}`,
+      })
+    }
+
     return out.sort((a, b) => b.timestampMs - a.timestampMs)
-  }, [onChain, offSnap, rawEvents, didSnap])
+  }, [onChain, offSnap, rawEvents, didSnap, netSnap])
 
   const filtered = items.filter((i) => {
     if (filterKind !== 'all' && i.kind !== filterKind) return false
@@ -252,7 +274,7 @@ export default function LivePage() {
         {/* Filter pills */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="text-muted mr-1">event:</span>
-          {(['all', 'OffChainBounty', 'DIDRegistered', 'RepoSeen', 'BountyCreated', 'BountyClaimed', 'BountyCompleted'] as const).map(
+          {(['all', 'CommitPushed', 'OffChainBounty', 'DIDRegistered', 'RepoSeen', 'BountyCreated', 'BountyClaimed', 'BountyCompleted'] as const).map(
             (k) => (
               <button
                 key={k}
