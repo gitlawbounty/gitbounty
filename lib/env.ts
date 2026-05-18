@@ -1,0 +1,23 @@
+import { z } from 'zod'
+
+const schema = z.object({
+  NEXT_PUBLIC_CHAIN_ID: z.coerce.number(),
+  NEXT_PUBLIC_BOUNTY_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+  NEXT_PUBLIC_TOKEN_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+  NEXT_PUBLIC_DID_REGISTRY_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+  NEXT_PUBLIC_RPC_URL: z.string().url(),
+  NEXT_PUBLIC_WSS_URL: z.string().url(),
+  NEXT_PUBLIC_DEPLOY_BLOCK: z.coerce.bigint(),
+  NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
+})
+
+export const env = schema.parse({
+  NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
+  NEXT_PUBLIC_BOUNTY_ADDRESS: process.env.NEXT_PUBLIC_BOUNTY_ADDRESS,
+  NEXT_PUBLIC_TOKEN_ADDRESS: process.env.NEXT_PUBLIC_TOKEN_ADDRESS,
+  NEXT_PUBLIC_DID_REGISTRY_ADDRESS: process.env.NEXT_PUBLIC_DID_REGISTRY_ADDRESS,
+  NEXT_PUBLIC_RPC_URL: process.env.NEXT_PUBLIC_RPC_URL,
+  NEXT_PUBLIC_WSS_URL: process.env.NEXT_PUBLIC_WSS_URL,
+  NEXT_PUBLIC_DEPLOY_BLOCK: process.env.NEXT_PUBLIC_DEPLOY_BLOCK,
+  NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+})
