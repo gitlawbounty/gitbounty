@@ -53,6 +53,22 @@ export default function Home() {
 
   const filteredOffChain = useMemo(() => {
     let out = offChainBounties
+
+    // Status filter — map numeric BountyStatus to off-chain string label
+    if (filters.status !== 'all') {
+      const map: Record<number, string> = {
+        [BountyStatus.Open]: 'open',
+        [BountyStatus.Claimed]: 'claimed',
+        [BountyStatus.Submitted]: 'submitted',
+        [BountyStatus.Completed]: 'completed',
+        [BountyStatus.Cancelled]: 'cancelled',
+        [BountyStatus.Disputed]: 'disputed',
+      }
+      const target = map[filters.status]
+      if (target) out = out.filter((b) => b.status === target)
+    }
+
+    // Search filter
     if (filters.search) {
       const q = filters.search.toLowerCase()
       out = out.filter(
@@ -62,11 +78,31 @@ export default function Home() {
           b.repoName.toLowerCase().includes(q),
       )
     }
-    if (filters.sort === 'highest') {
-      out = [...out].sort((a, b) => b.amountNumeric - a.amountNumeric)
+
+    // Sort
+    const parseAge = (label: string): number => {
+      if (!label) return 0
+      if (/^<1m/i.test(label)) return 30
+      const m = label.match(/(\d+)\s*([smhd])/i)
+      if (!m) return Number.MAX_SAFE_INTEGER
+      const n = Number(m[1])
+      const unit = m[2].toLowerCase()
+      const sec = unit === 'd' ? 86400 : unit === 'h' ? 3600 : unit === 'm' ? 60 : 1
+      return n * sec
     }
+    if (filters.sort === 'newest') {
+      out = [...out].sort((a, b) => parseAge(a.ageLabel) - parseAge(b.ageLabel))
+    } else if (filters.sort === 'highest') {
+      out = [...out].sort((a, b) => b.amountNumeric - a.amountNumeric)
+    } else if (filters.sort === 'closing') {
+      // For off-chain we don't know deadline → fall back to claimed-only newest first
+      out = [...out]
+        .filter((b) => b.status === 'claimed')
+        .sort((a, b) => parseAge(a.ageLabel) - parseAge(b.ageLabel))
+    }
+
     return out
-  }, [offChainBounties, filters.search, filters.sort])
+  }, [offChainBounties, filters.status, filters.search, filters.sort])
 
   return (
     <div className="min-h-screen">
