@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={GeistMono.className}>
+    <html lang="en" className={`${GeistMono.className} ${GeistMono.variable}`}>
       <body className="bg-base text-primary antialiased min-h-screen">
         <Providers>{children}</Providers>
         <Toaster theme="dark" position="bottom-right" />

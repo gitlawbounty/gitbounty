@@ -14,10 +14,6 @@
   --font-mono: var(--font-geist-mono), monospace;
 }
 
-:root {
-  --terminal-bg: #0a0a0a;
-}
-
 @keyframes blink {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
