@@ -106,7 +106,7 @@ export function PostBountyForm() {
       <Field label="repo owner (DID or address)" error={errors.repoOwner?.message}>
         <input
           {...register('repoOwner')}
-          placeholder="did:gitlawb:z6Mk..."
+          placeholder="did:key:z6Mk..."
           className={inputClass}
         />
       </Field>

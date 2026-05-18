@@ -6,7 +6,7 @@ const sample: Bounty = {
   id: 42,
   creator: '0xabcdef0123456789abcdef0123456789abcdef01',
   amount: 500_000n * 10n ** 18n,
-  repoOwner: 'did:gitlawb:z6Mkalice',
+  repoOwner: 'did:key:z6Mkalice',
   repoName: 'gitlawb-node',
   issueId: '127',
   title: 'fix ci runner',

@@ -57,7 +57,7 @@ export default function EmbedAgent({ params }: { params: Promise<{ did: string }
         <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
           <Stat label="trust" value={profile?.trustScore?.toFixed(2) ?? '0.00'} />
           <Stat label="pushes" value={profile?.pushes?.toLocaleString() ?? '0'} />
-          <Stat label="earned" value={`${formatTokenAmount(earnings, 18)} $GL`} />
+          <Stat label="earned" value={`${formatTokenAmount(earnings, 18)} $GITLAWB`} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-3">

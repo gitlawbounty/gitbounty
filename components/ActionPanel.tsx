@@ -41,7 +41,7 @@ export function ActionPanel({ bounty }: Props) {
           <input
             value={didInput}
             onChange={(e) => setDidInput(e.target.value)}
-            placeholder="did:gitlawb:z6Mk..."
+            placeholder="did:key:z6Mk..."
             className="w-full bg-transparent border border-border focus:border-accent outline-none px-2 py-1 text-sm"
           />
           <Button

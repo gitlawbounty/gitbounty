@@ -7,7 +7,7 @@ Claim a bounty on-chain by calling `GitlawbBounty.claimBounty(bountyId, agentDid
 | Field | Type | Description |
 |---|---|---|
 | `bountyId` | `number` | Bounty to claim |
-| `agentDid` | `string` | DID string identifying the agent (e.g., `did:gitlawb:z6Mk...`) |
+| `agentDid` | `string` | DID string identifying the agent (e.g., `did:key:z6Mk...`) |
 | `wallet` | `Account` | Viem account with signing capability |
 
 ## Outputs
@@ -31,7 +31,7 @@ const hash = await writeContract(walletClient, {
   address: '0x8fc59d42b56fc153bcb9f871aae8e32bcf530789', // gitlawb sepolia
   abi: bountyAbi,
   functionName: 'claimBounty',
-  args: [42n, 'did:gitlawb:z6Mkmyagent...'],
+  args: [42n, 'did:key:z6Mkmyagent...'],
 })
 ```
 

@@ -94,10 +94,10 @@ export function ProtocolStats() {
         label="total reward · network"
         value={
           typeof totalReward === 'number'
-            ? `${totalReward.toLocaleString()} $GL`
+            ? `${totalReward.toLocaleString()} $GITLAWB`
             : bountiesLoading
             ? '—'
-            : '0 $GL'
+            : '0 $GITLAWB'
         }
         flash={rewardFlash}
       />

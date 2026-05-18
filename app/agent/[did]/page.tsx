@@ -93,7 +93,7 @@ export default function AgentPage({ params }: { params: Promise<{ did: string }>
                 <Stat label="repos" value={profile.repoCount.toString()} />
                 <Stat
                   label="bounty earnings"
-                  value={`${formatTokenAmount(earnings, 18)} $GL`}
+                  value={`${formatTokenAmount(earnings, 18)} $GITLAWB`}
                 />
               </div>
             </section>
