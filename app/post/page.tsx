@@ -37,7 +37,7 @@ export default function PostPage() {
             <div className="text-base">wallet not connected.</div>
             <div className="text-sm text-muted">posting an on-chain bounty requires:</div>
             <ul className="text-sm text-muted list-disc list-inside space-y-1">
-              <li>Base Sepolia wallet</li>
+              <li>wallet on the gitbounty escrow chain (currently testnet)</li>
               <li>$GITLAWB approval (test token has public mint — see docs)</li>
             </ul>
             <div className="pt-2">

@@ -166,7 +166,7 @@ function Banner({ mark, accent }: { mark: React.ReactNode; accent: string }) {
           }}
         >
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: accent }} />
-          live · base sepolia
+          live · gitlawb network
         </div>
 
         <div

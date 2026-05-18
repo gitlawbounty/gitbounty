@@ -129,7 +129,7 @@ export default function Home() {
                 <div>
                   <h2 className="text-xl font-semibold tracking-tight">from gitlawb network</h2>
                   <p className="text-xs text-muted font-mono mt-0.5">
-                    scraped from gitlawb.com · refreshes every 5min
+                    sourced from node.gitlawb.com firehose · refreshes every 15s
                   </p>
                 </div>
                 <span className="text-xs font-mono text-muted shrink-0">

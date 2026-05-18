@@ -20,7 +20,7 @@ export function useNetworkStats() {
       if (!res.ok) throw new Error(`network-stats ${res.status}`)
       return res.json()
     },
-    staleTime: 10_000,
-    refetchInterval: 10_000, // poll every 10s — feels live
+    staleTime: 30_000,
+    refetchInterval: 30_000, // poll every 30s — balances live feel with upstream load
   })
 }

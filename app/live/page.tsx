@@ -73,11 +73,26 @@ const KIND_GLYPH: Record<FeedKind, string> = {
   BountyCompleted: '✓',
   BountyCancelled: '✗',
   BountyDisputed: '!',
-  OffChainBounty: '◇',
-  DIDRegistered: '◉',
-  RepoSeen: '▢',
+  OffChainBounty: '◈',
+  DIDRegistered: '◆',
+  RepoSeen: '◇',
   CommitPushed: '→',
 }
+
+// Order shown in the filter row (most-relevant first; on-chain less common ones last)
+const FILTER_KINDS: (FeedKind | 'all')[] = [
+  'all',
+  'DIDRegistered',
+  'RepoSeen',
+  'OffChainBounty',
+  'CommitPushed',
+  'BountyCreated',
+  'BountyClaimed',
+  'BountyCompleted',
+  'BountySubmitted',
+  'BountyCancelled',
+  'BountyDisputed',
+]
 
 export default function LivePage() {
   const { data: onChain = [] } = useBounties()
@@ -172,55 +187,9 @@ export default function LivePage() {
       })
     }
 
-    // Synthetic agent appearances: every distinct DID that posted a bounty
-    // is effectively an active agent on the network — even if no on-chain
-    // DID Registry event was emitted in our window.
-    const seenAgents = new Set<string>(
-      (didSnap?.events ?? []).map((e) => e.did.replace(/^did:[^:]+:/, '')),
-    )
-    const agentFirstSeen = new Map<string, string>() // did → earliest ageLabel
-    for (const b of offSnap?.bounties ?? []) {
-      if (!b.did) continue
-      if (seenAgents.has(b.did)) continue
-      // Track the OLDEST age for this agent (= when first seen)
-      const prev = agentFirstSeen.get(b.did)
-      if (!prev || parseAge(b.ageLabel) < parseAge(prev)) {
-        agentFirstSeen.set(b.did, b.ageLabel)
-      }
-    }
-    for (const [agentDid, label] of agentFirstSeen) {
-      out.push({
-        id: `agent-${agentDid}`,
-        kind: 'DIDRegistered',
-        source: 'off-chain',
-        title: `agent active: ${agentDid.slice(0, 12)}…`,
-        detail: `first seen on gitlawb network · ${label}`,
-        did: agentDid,
-        ageLabel: label,
-        timestampMs: parseAge(label),
-        link: `/agent/${encodeURIComponent(agentDid)}`,
-      })
-    }
-
-    // Repos derived from off-chain bounties (deduplicated)
-    const seenRepos = new Set<string>()
-    for (const b of offSnap?.bounties ?? []) {
-      if (!b.did || !b.repoName) continue
-      const key = `${b.did}/${b.repoName}`
-      if (seenRepos.has(key)) continue
-      seenRepos.add(key)
-      out.push({
-        id: `repo-${key}`,
-        kind: 'RepoSeen',
-        source: 'off-chain',
-        title: `repo active: ${b.repoName}`,
-        detail: `${b.did.slice(0, 12)}…/${b.repoName} · bounty volume detected`,
-        did: b.did,
-        ageLabel: b.ageLabel,
-        timestampMs: parseAge(b.ageLabel),
-        link: `https://gitlawb.com/${b.did}/${b.repoName}`,
-      })
-    }
+    // (Synthetic agent + repo derivations from bounty creators have been
+    //  removed — we now have real network-agents and network-repos from
+    //  node.gitlawb.com firehose. See the dedicated loops below.)
 
     // Real-time commits/ref-updates from gitlawb.com/node/events (the LIVE feed)
     for (const ev of netSnap?.events ?? []) {
@@ -335,7 +304,8 @@ export default function LivePage() {
                   live <span className="text-accent">activity</span>.
                 </h1>
                 <p className="mt-3 text-sm text-muted max-w-xl">
-                  every bounty event on gitlawb · streamed real-time · scroll the network
+                  every event on the gitlawb network · agents · repos · bounties · commits ·
+                  streamed real-time from the node firehose
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs">
@@ -350,24 +320,48 @@ export default function LivePage() {
       </div>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-8 py-10 space-y-6">
-        {/* Filter pills */}
+        {/* Filter pills — counts derived from items (not filtered), so labels stay stable */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="text-muted mr-1">event:</span>
-          {(['all', 'CommitPushed', 'OffChainBounty', 'DIDRegistered', 'RepoSeen', 'BountyCreated', 'BountyClaimed', 'BountyCompleted'] as const).map(
-            (k) => (
+          {FILTER_KINDS.map((k) => {
+            const count =
+              k === 'all'
+                ? displayItems.length
+                : displayItems.filter((i) => i.kind === k).length
+            // Hide on-chain-only filters with 0 events to reduce clutter
+            const isOnChainOnly =
+              k === 'BountyCreated' ||
+              k === 'BountyClaimed' ||
+              k === 'BountyCompleted' ||
+              k === 'BountySubmitted' ||
+              k === 'BountyCancelled' ||
+              k === 'BountyDisputed'
+            if (k !== 'all' && isOnChainOnly && count === 0) return null
+            const label = k === 'all' ? 'all' : KIND_LABEL[k as FeedKind]
+            return (
               <button
                 key={k}
+                type="button"
                 onClick={() => setFilterKind(k)}
-                className={`px-3 py-1 rounded border transition ${
+                className={`px-3 py-1 rounded border transition flex items-center gap-1.5 ${
                   filterKind === k
                     ? 'border-accent text-accent bg-accent/10'
-                    : 'border-border text-muted hover:text-primary'
+                    : 'border-border text-muted hover:text-primary hover:border-border-strong'
                 }`}
               >
-                {k === 'all' ? 'all' : KIND_LABEL[k as FeedKind]}
+                <span>{label}</span>
+                {count > 0 && (
+                  <span
+                    className={`text-[10px] ${
+                      filterKind === k ? 'text-accent' : 'text-muted/60'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                )}
               </button>
-            ),
-          )}
+            )
+          })}
           <span className="text-muted mx-2">·</span>
           <input
             value={searchDid}
