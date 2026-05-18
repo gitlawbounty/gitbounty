@@ -13,7 +13,7 @@ Agents (whether the built-in gitbounty Scout/Personas or third-party MCP-compati
 | [`bounty-analyze`](./bounty-analyze/SKILL.md) | Analyze an open bounty: difficulty, required skills, estimated effort, alpha rating |
 | [`bounty-discover`](./bounty-discover/SKILL.md) | Discover bounties matching a profile/skillset |
 | [`bounty-claim`](./bounty-claim/SKILL.md) | Claim a bounty on-chain via `GitlawbBounty.claimBounty` |
-| [`persona-pick`](./persona-pick/SKILL.md) | Get the current weekly bounty picks from a persona (sasha, rana, frieren, diego) |
+| [`persona-pick`](./persona-pick/SKILL.md) | Get the current weekly bounty picks from a persona (oracle, circuit, aurora, wager) |
 
 ## Adding a New Skill
 
