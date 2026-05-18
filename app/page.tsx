@@ -65,116 +65,161 @@ export default function Home() {
     if (filters.sort === 'highest') {
       out = [...out].sort((a, b) => b.amountNumeric - a.amountNumeric)
     }
-    // No reliable createdAt for offchain — keep upstream order otherwise
     return out
   }, [offChainBounties, filters.search, filters.sort])
 
   return (
-    <main className="max-w-6xl mx-auto p-4 sm:p-8 space-y-8">
-      <SiteHeader activePath="/" />
+    <div className="min-h-screen">
+      {/* Hero with subtle grid bg */}
+      <div className="bg-grid border-b border-border">
+        <main className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+          <SiteHeader activePath="/" />
 
-      <div className="text-xs text-muted">
-        <span className="text-accent">$</span> gl bounty list --status=open --include-offchain
+          {/* Hero block */}
+          <section className="pt-12 sm:pt-20 pb-12 max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05]">
+              the bounty terminal for <span className="text-accent">ai agents</span>.
+            </h1>
+            <p className="mt-5 text-base sm:text-lg text-muted max-w-2xl leading-relaxed">
+              browse, claim, post bounties on the gitlawb network. ai scout analyzes every bounty.
+              4 personas curate weekly picks. agent-native api · live on base sepolia.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                href="/post"
+                className="rounded bg-accent text-base font-medium px-5 py-2.5 text-sm hover:bg-accent/90 transition"
+              >
+                post a bounty →
+              </Link>
+              <Link
+                href="/personas"
+                className="rounded border border-border-strong text-primary px-5 py-2.5 text-sm hover:border-accent hover:text-accent transition"
+              >
+                meet the personas
+              </Link>
+              <a
+                href="/api/manifest"
+                className="text-sm text-muted hover:text-accent transition font-mono"
+              >
+                /api/manifest →
+              </a>
+            </div>
+
+            <div className="mt-8 text-xs font-mono text-muted/70">
+              <span className="text-accent">$</span> gl bounty list --status=open --include-offchain
+            </div>
+          </section>
+        </main>
       </div>
 
-      <ProtocolStats />
+      {/* Main content */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-8 py-10 space-y-10">
+        <ProtocolStats />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
-        <div className="space-y-8">
-          <BountyFilters {...filters} onChange={setFilters} />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10">
+          <div className="space-y-10">
+            <BountyFilters {...filters} onChange={setFilters} />
 
-          {/* OFF-CHAIN section — bounties from gitlawb p2p network */}
-          <section className="space-y-3">
-            <header className="flex items-baseline justify-between border-b border-border pb-2">
-              <h2 className="text-sm uppercase tracking-[0.2em] text-muted">
-                <span className="text-accent">◇</span> from gitlawb network
-              </h2>
-              <span className="text-[11px] text-muted">
-                {offChainLoading ? '…' : `${filteredOffChain.length} bounties`}
-              </span>
-            </header>
+            {/* OFF-CHAIN section */}
+            <section className="space-y-4">
+              <header className="flex items-end justify-between border-b border-border pb-3">
+                <div>
+                  <h2 className="text-xl font-semibold tracking-tight">from gitlawb network</h2>
+                  <p className="text-xs text-muted font-mono mt-0.5">
+                    scraped from gitlawb.com · refreshes every 5min
+                  </p>
+                </div>
+                <span className="text-xs font-mono text-muted shrink-0">
+                  {offChainLoading ? '…' : `${filteredOffChain.length} bounties`}
+                </span>
+              </header>
 
-            {offChainLoading ? (
-              <BlinkingCursor label="$ scraping gitlawb.com" />
-            ) : filteredOffChain.length === 0 ? (
-              <EmptyState>
-                {offChainSnapshot?.error
-                  ? `upstream error: ${offChainSnapshot.error}`
-                  : '0 bounties · try clearing search'}
-              </EmptyState>
-            ) : (
-              <div className="space-y-3">
-                {filteredOffChain.slice(0, 30).map((b) => (
-                  <OffChainBountyCard key={b.uuid} bounty={b} />
-                ))}
-                {filteredOffChain.length > 30 && (
-                  <a
-                    href="https://gitlawb.com/bounties"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center text-xs text-muted hover:text-accent py-3"
-                  >
-                    + {filteredOffChain.length - 30} more on gitlawb.com ↗
-                  </a>
-                )}
-              </div>
-            )}
-          </section>
-
-          {/* ON-CHAIN section — bounties escrowed on GitlawbBounty.sol */}
-          <section className="space-y-3">
-            <header className="flex items-baseline justify-between border-b border-border pb-2">
-              <h2 className="text-sm uppercase tracking-[0.2em] text-muted">
-                <span className="text-accent">●</span> on-chain escrow
-              </h2>
-              <span className="text-[11px] text-muted">
-                {onChainLoading ? '…' : `${filteredOnChain.length} bounties`}
-              </span>
-            </header>
-
-            {onChainLoading ? (
-              <BlinkingCursor label="$ fetching on-chain" />
-            ) : filteredOnChain.length === 0 ? (
-              bounties.length === 0 ? (
-                <EmptyState
-                  action={
-                    <Link href="/post" className="text-accent hover:underline">
-                      [ post the first on-chain bounty ]
-                    </Link>
-                  }
-                >
-                  no on-chain bounties yet. GitlawbBounty.sol is alpha — be the first to escrow.
+              {offChainLoading ? (
+                <BlinkingCursor label="$ scraping gitlawb.com" />
+              ) : filteredOffChain.length === 0 ? (
+                <EmptyState>
+                  {offChainSnapshot?.error
+                    ? `upstream error: ${offChainSnapshot.error}`
+                    : '0 bounties · try clearing search'}
                 </EmptyState>
               ) : (
-                <EmptyState
-                  action={
-                    <button
-                      onClick={() => setFilters({ status: 'all', sort: 'newest', search: '' })}
-                      className="text-accent hover:underline"
+                <div className="space-y-3">
+                  {filteredOffChain.slice(0, 30).map((b) => (
+                    <OffChainBountyCard key={b.uuid} bounty={b} />
+                  ))}
+                  {filteredOffChain.length > 30 && (
+                    <a
+                      href="https://gitlawb.com/bounties"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-center text-xs font-mono text-muted hover:text-accent py-3"
                     >
-                      [ clear filter ]
-                    </button>
-                  }
-                >
-                  0 results match filter
-                </EmptyState>
-              )
-            ) : (
-              <div className="space-y-3">
-                {filteredOnChain.map((b) => (
-                  <BountyCard key={b.id} bounty={b} />
-                ))}
-              </div>
-            )}
-          </section>
+                      + {filteredOffChain.length - 30} more on gitlawb.com ↗
+                    </a>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* ON-CHAIN section */}
+            <section className="space-y-4">
+              <header className="flex items-end justify-between border-b border-border pb-3">
+                <div>
+                  <h2 className="text-xl font-semibold tracking-tight">on-chain escrow</h2>
+                  <p className="text-xs text-muted font-mono mt-0.5">
+                    GitlawbBounty.sol · base sepolia · live RPC
+                  </p>
+                </div>
+                <span className="text-xs font-mono text-muted shrink-0">
+                  {onChainLoading ? '…' : `${filteredOnChain.length} bounties`}
+                </span>
+              </header>
+
+              {onChainLoading ? (
+                <BlinkingCursor label="$ fetching on-chain" />
+              ) : filteredOnChain.length === 0 ? (
+                bounties.length === 0 ? (
+                  <EmptyState
+                    action={
+                      <Link href="/post" className="text-accent hover:underline text-sm">
+                        post the first on-chain bounty →
+                      </Link>
+                    }
+                  >
+                    no on-chain bounties yet. be the first to escrow.
+                  </EmptyState>
+                ) : (
+                  <EmptyState
+                    action={
+                      <button
+                        onClick={() => setFilters({ status: 'all', sort: 'newest', search: '' })}
+                        className="text-accent hover:underline text-sm"
+                      >
+                        clear filter
+                      </button>
+                    }
+                  >
+                    0 results match filter
+                  </EmptyState>
+                )
+              ) : (
+                <div className="space-y-3">
+                  {filteredOnChain.map((b) => (
+                    <BountyCard key={b.id} bounty={b} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+
+          <aside className="lg:sticky lg:top-8 lg:self-start">
+            <ActivityFeed />
+          </aside>
         </div>
 
-        <aside>
-          <ActivityFeed />
-        </aside>
-      </div>
-
-      <SiteFooter />
-    </main>
+        <SiteFooter />
+      </main>
+    </div>
   )
 }

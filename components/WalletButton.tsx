@@ -10,9 +10,9 @@ export function WalletButton() {
         return (
           <button
             onClick={account ? openAccountModal : openConnectModal}
-            className="border border-accent text-accent px-3 py-1.5 text-sm hover:bg-accent hover:text-base"
+            className="rounded border border-border-strong text-primary px-3.5 py-2 text-sm hover:border-accent hover:text-accent transition"
           >
-            [ {account ? account.displayName : 'connect wallet'} ]
+            {account ? account.displayName : 'connect wallet'}
           </button>
         )
       }}

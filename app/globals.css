@@ -2,16 +2,20 @@
 
 @theme {
   --color-base: #0a0a0a;
+  --color-surface: #111111;
   --color-primary: #e5e5e5;
   --color-muted: #71717a;
   --color-accent: #10b981;
+  --color-accent-dim: #064e3b;
   --color-status-open: #10b981;
   --color-status-claimed: #f59e0b;
   --color-status-completed: #22d3ee;
   --color-status-disputed: #f43f5e;
   --color-status-cancelled: #71717a;
   --color-border: #27272a;
-  --font-mono: var(--font-geist-mono), monospace;
+  --color-border-strong: #3f3f46;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), 'JetBrains Mono', monospace;
 }
 
 @keyframes blink {
@@ -23,3 +27,14 @@
   content: '_';
   animation: blink 1s steps(2) infinite;
 }
+
+/* Subtle grid background (used in hero) */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Use mono font in selective places */
+.font-mono { font-family: var(--font-mono); }

@@ -19,8 +19,8 @@ const NAV_LINKS: { label: string; href: string }[] = [
 export function SiteHeader({ activePath }: Props) {
   return (
     <header className="space-y-4">
-      {/* Top status bar */}
-      <div className="flex items-center justify-between text-xs text-muted uppercase tracking-[0.2em]">
+      {/* Top status bar — mono, very thin */}
+      <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.25em] text-muted">
         <span>[ gitbounty terminal · v0.1.0-alpha ]</span>
         <span className="flex items-center gap-2 text-accent">
           <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
@@ -28,41 +28,41 @@ export function SiteHeader({ activePath }: Props) {
         </span>
       </div>
 
-      {/* Brand + nav row */}
-      <div className="flex items-center justify-between flex-wrap gap-4 border-t border-border pt-4">
+      {/* Brand row */}
+      <div className="flex items-center justify-between flex-wrap gap-6 pt-2">
         <Link href="/" className="flex items-center gap-3 group">
           <Image
             src="/logo.png"
             alt="gitbounty"
-            width={40}
-            height={40}
+            width={44}
+            height={44}
             className="rounded-md"
             priority
           />
           <div>
-            <div className="text-xl font-bold leading-none group-hover:text-accent transition">
+            <div className="text-2xl font-semibold tracking-tight group-hover:text-accent transition">
               gitbounty
             </div>
-            <div className="text-[10px] text-muted uppercase tracking-[0.2em] mt-1">
+            <div className="text-xs font-mono text-muted mt-0.5">
               ai-curated bounty terminal
             </div>
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 flex-wrap text-sm">
+        <nav className="flex items-center gap-1 flex-wrap text-sm font-mono">
           {NAV_LINKS.map((link) => {
             const isActive = activePath === link.href
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-2.5 py-1.5 border transition ${
+                className={`px-3 py-1.5 rounded transition ${
                   isActive
-                    ? 'border-accent text-accent'
-                    : 'border-transparent text-muted hover:text-primary'
+                    ? 'bg-accent/10 text-accent'
+                    : 'text-muted hover:text-primary hover:bg-border/40'
                 }`}
               >
-                [ {link.label} ]
+                {link.label}
               </Link>
             )
           })}
@@ -71,9 +71,9 @@ export function SiteHeader({ activePath }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href="/post"
-            className="border border-accent text-accent px-3 py-1.5 text-sm hover:bg-accent hover:text-base"
+            className="rounded bg-accent text-base font-medium px-3.5 py-2 text-sm hover:bg-accent/90 transition"
           >
-            [ post a bounty ]
+            post a bounty
           </Link>
           <WalletButton />
         </div>
