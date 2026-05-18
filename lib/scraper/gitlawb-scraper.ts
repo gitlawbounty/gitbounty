@@ -145,9 +145,9 @@ export function parseBountiesHtml(html: string): OffChainBounty[] {
  * Fetch off-chain bounties. Prefers the official JSON API at node.gitlawb.com,
  * falls back to scraping gitlawb.com/bounties HTML if the node is unreachable.
  *
- * The JSON path is the same source @Gitlawbterminal uses — full firehose with
- * real timestamps, claimant DIDs, and structured status. HTML scrape stays as
- * a safety net so the site stays alive if the node API ever goes down.
+ * The JSON path is the gitlawb node firehose — full data with real timestamps,
+ * claimant DIDs, and structured status. HTML scrape stays as a safety net so
+ * the site stays alive if the node API ever goes down.
  */
 export async function fetchOffChainBounties(): Promise<ScrapedBountySnapshot> {
   const fetchedAt = new Date().toISOString()

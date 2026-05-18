@@ -342,8 +342,6 @@ This repo lives on multiple networks:
 ### Ecosystem
 
 - [@gitlawb](https://x.com/gitlawb) — the protocol
-- [@Gitlawbterminal](https://x.com/Gitlawbterminal) — network monitor
-- [@VexorTerminal](https://x.com/VexorTerminal) — autonomous orchestrator
 - [@Gitlawbounty](https://x.com/Gitlawbounty) — this terminal
 
 ---

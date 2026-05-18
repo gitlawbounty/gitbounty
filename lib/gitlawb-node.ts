@@ -1,5 +1,5 @@
 // Direct client for node.gitlawb.com/api/v1/* — the official gitlawb node JSON API.
-// This is the SAME source @Gitlawbterminal uses. Full firehose, not HTML scraping.
+// Full firehose: bounties, agents, repos, events. Not HTML scraping.
 
 const NODE_BASE = 'https://node.gitlawb.com/api/v1'
 

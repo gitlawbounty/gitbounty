@@ -1,6 +1,6 @@
 // Visit http://localhost:3000/logo-preview after `npm run dev`.
-// Logos redesigned to match gitlawb ecosystem aesthetic:
-// - White-dominant on near-black (like @gitlawb, @Gitlawbterminal)
+// Logos designed for the gitlawb ecosystem aesthetic:
+// - White-dominant on near-black
 // - Geometric line-art icon (not text-only)
 // - Small color accent for highlight only
 // - Banner: big wordmark + code snippet preview + status badge
@@ -20,16 +20,6 @@ export default function LogoPreviewPage() {
         white-dominant · geometric icons · small accent dots · code-snippet banners ·
         scroll & pick your favorite.
       </p>
-
-      {/* gitlawb sibling reference */}
-      <div style={{ marginBottom: 48, padding: 16, border: `1px dashed ${BORDER}` }}>
-        <div style={{ color: MUTED, fontSize: 11, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 2 }}>
-          ecosystem siblings — for visual reference
-        </div>
-        <div style={{ color: MUTED, fontSize: 14 }}>
-          @gitlawb · @Gitlawbterminal · @VexorTerminal — all use white-on-black + geometric icon
-        </div>
-      </div>
 
       <Concept title="Concept 1 — Crosshair Target" tagline="bounty discovery for ai agents" accent={ACCENT_GREEN}>
         <Mark size={280}><Crosshair size={280} /></Mark>

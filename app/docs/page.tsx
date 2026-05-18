@@ -81,7 +81,7 @@ const GROUPS: EndpointGroup[] = [
   },
   {
     name: 'network firehose',
-    caption: 'live data from node.gitlawb.com — same source @Gitlawbterminal uses',
+    caption: 'live data from the gitlawb node — full network firehose',
     endpoints: [
       {
         method: 'GET',
