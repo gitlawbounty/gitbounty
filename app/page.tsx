@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { useBounties } from '@/hooks/useBounties'
 import { useOffChainBounties } from '@/hooks/useOffChainBounties'
@@ -25,6 +25,12 @@ export default function Home() {
     sort: 'newest',
     search: '',
   })
+  const PAGE_SIZE = 10
+  const [offChainPage, setOffChainPage] = useState(1)
+  // Reset to page 1 whenever filters change (so filtered set doesn't land on an out-of-bounds page)
+  useEffect(() => {
+    setOffChainPage(1)
+  }, [filters.status, filters.sort, filters.search])
 
   const filteredOnChain = useMemo(() => {
     let out = bounties
@@ -174,27 +180,48 @@ export default function Home() {
               </header>
 
               {offChainLoading ? (
-                <BlinkingCursor label="$ scraping gitlawb.com" />
+                <BlinkingCursor label="$ pulling firehose" />
               ) : filteredOffChain.length === 0 ? (
                 <EmptyState>
                   {offChainSnapshot?.error
                     ? `upstream error: ${offChainSnapshot.error}`
-                    : '0 bounties · try clearing search'}
+                    : '0 bounties · try clearing filter or search'}
                 </EmptyState>
               ) : (
                 <div className="space-y-3">
-                  {filteredOffChain.slice(0, 30).map((b) => (
-                    <OffChainBountyCard key={b.uuid} bounty={b} />
-                  ))}
-                  {filteredOffChain.length > 30 && (
-                    <a
-                      href="https://gitlawb.com/bounties"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-center text-xs font-mono text-muted hover:text-accent py-3"
-                    >
-                      + {filteredOffChain.length - 30} more on gitlawb.com ↗
-                    </a>
+                  {filteredOffChain
+                    .slice((offChainPage - 1) * PAGE_SIZE, offChainPage * PAGE_SIZE)
+                    .map((b) => (
+                      <OffChainBountyCard key={b.uuid} bounty={b} />
+                    ))}
+                  {filteredOffChain.length > PAGE_SIZE && (
+                    <div className="flex items-center justify-between text-xs font-mono pt-3 border-t border-border">
+                      <button
+                        type="button"
+                        onClick={() => setOffChainPage((p) => Math.max(1, p - 1))}
+                        disabled={offChainPage === 1}
+                        className="px-3 py-1.5 border border-border hover:border-accent hover:text-accent transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted"
+                      >
+                        ← prev
+                      </button>
+                      <span className="text-muted">
+                        page {offChainPage} / {Math.ceil(filteredOffChain.length / PAGE_SIZE)} ·{' '}
+                        <span className="text-primary">{filteredOffChain.length}</span> total
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOffChainPage((p) =>
+                            Math.min(Math.ceil(filteredOffChain.length / PAGE_SIZE), p + 1),
+                          )
+                        }
+                        disabled={offChainPage >= Math.ceil(filteredOffChain.length / PAGE_SIZE)}
+                        className="px-3 py-1.5 border border-border hover:border-accent hover:text-accent transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted"
+                      >
+                        next →
+                      </button>
+                    </div>
+                  )}
                   )}
                 </div>
               )}
