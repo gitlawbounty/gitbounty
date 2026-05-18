@@ -104,6 +104,12 @@ export default function LivePage() {
   const { data: reposSnap } = useNetworkRepos(100, 'updated')
   const [filterKind, setFilterKind] = useState<FeedKind | 'all'>('all')
   const [searchDid, setSearchDid] = useState('')
+  const PAGE_SIZE = 10
+  const [page, setPage] = useState(1)
+  // Reset to page 1 when filter or search changes — otherwise user could land on an out-of-bounds page
+  useEffect(() => {
+    setPage(1)
+  }, [filterKind, searchDid])
 
   // Track which item ids we've already shown — anything not in this set is "NEW"
   const seenIds = useRef<Set<string>>(new Set())
@@ -376,14 +382,41 @@ export default function LivePage() {
           {filtered.length === 0 ? (
             <EmptyByFilter filter={filterKind} searchDid={searchDid} />
           ) : (
-            filtered.slice(0, 100).map((item) => (
-              <FeedRow key={item.id} item={item} />
-            ))
+            filtered
+              .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+              .map((item) => <FeedRow key={item.id} item={item} />)
           )}
         </div>
 
+        {filtered.length > PAGE_SIZE && (
+          <div className="flex items-center justify-between text-xs font-mono pt-3 border-t border-border">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1.5 border border-border hover:border-accent hover:text-accent transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted"
+            >
+              ← prev
+            </button>
+            <span className="text-muted">
+              page {page} / {Math.ceil(filtered.length / PAGE_SIZE)} ·{' '}
+              <span className="text-primary">{filtered.length}</span> events
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setPage((p) => Math.min(Math.ceil(filtered.length / PAGE_SIZE), p + 1))
+              }
+              disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)}
+              className="px-3 py-1.5 border border-border hover:border-accent hover:text-accent transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted"
+            >
+              next →
+            </button>
+          </div>
+        )}
+
         <div className="border-t border-border pt-4 text-[10px] text-muted font-mono">
-          <span className="text-accent">$</span> showing latest {Math.min(filtered.length, 100)} events ·
+          <span className="text-accent">$</span> {filtered.length} events ·
           gitlawb node firehose · polls every 10-30s
         </div>
 
