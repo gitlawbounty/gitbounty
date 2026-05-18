@@ -328,15 +328,17 @@ export default function LivePage() {
               k === 'all'
                 ? displayItems.length
                 : displayItems.filter((i) => i.kind === k).length
-            // Hide on-chain-only filters with 0 events to reduce clutter
-            const isOnChainOnly =
+            // Hide filters that depend on data sources we don't have yet
+            // (on-chain when count=0, gossipsub commits which are not exposed by node API)
+            const isPlaceholder =
               k === 'BountyCreated' ||
               k === 'BountyClaimed' ||
               k === 'BountyCompleted' ||
               k === 'BountySubmitted' ||
               k === 'BountyCancelled' ||
-              k === 'BountyDisputed'
-            if (k !== 'all' && isOnChainOnly && count === 0) return null
+              k === 'BountyDisputed' ||
+              k === 'CommitPushed'
+            if (k !== 'all' && isPlaceholder && count === 0) return null
             const label = k === 'all' ? 'all' : KIND_LABEL[k as FeedKind]
             return (
               <button
