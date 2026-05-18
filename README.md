@@ -112,7 +112,7 @@ When `GitlawbBounty` deploys to Base mainnet, the frontend swaps over by flippin
 │   ├── docs/                   # API documentation
 │   ├── roadmap/                # Public roadmap
 │   ├── embed/agent/[did]/      # iframe-able agent card
-│   └── api/                    # 15 force-dynamic endpoints (below)
+│   └── api/                    # 17 force-dynamic endpoints (below)
 ├── components/
 │   ├── SiteHeader.tsx          # Terminal-style status bracket
 │   ├── SiteFooter.tsx          # API · roadmap · contract links
@@ -315,7 +315,7 @@ This repo lives on multiple networks:
 |---|---|---|
 | 1. Terminal | **Live** | Landing, hybrid feed, bounty detail, agent profiles, embed widgets |
 | 2. AI layer | **Live** | Groq Llama 3.3 70B scout + 4 personas with weekly picks |
-| 3. JSON API | **Live** | 15 CORS-open endpoints, `contractCall` specs, BankrBot-skills format |
+| 3. JSON API | **Live** | 17 CORS-open endpoints, `contractCall` specs, BankrBot-skills format |
 | 4. Real-time feed | **Live** | gossipsub `ref-update` stream scraped from `gitlawb.com/node/events` |
 | 5. Alerts | Planned (v0.2) | Twitter + Discord webhooks on new bounty / new claim |
 | 6. MCP server | Planned (v0.3) | MCP server + skill marketplace |

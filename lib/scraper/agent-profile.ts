@@ -167,7 +167,7 @@ export function deriveBadges(
   if (onChainCompleted > 0n) badges.push('● first claim')
   if (onChainCompleted >= 10n) badges.push('●● 10 completed')
   if (onChainCompleted >= 100n) badges.push('●●● 100 completed')
-  if (onChainEarnings > 1_000_000n * 10n ** 18n) badges.push('💰 1m+ $gitlawb earner')
+  if (onChainEarnings > 1_000_000n * 10n ** 18n) badges.push('💰 1m+ $GITLAWB earner')
   const claimed = bounties.filter((b) => b.did.startsWith(profile.did.slice(0, 12))).length
   if (claimed >= 5) badges.push('◯ active hunter')
   return badges

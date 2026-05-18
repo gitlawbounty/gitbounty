@@ -1,5 +1,5 @@
 {
-  "name": "bounty-beacon",
+  "name": "gitbounty",
   "_notes": {
     "wagmi": "Pinned to v2 because @rainbow-me/rainbowkit requires wagmi ^2.9.0 as peer dep. Do not upgrade to wagmi v3 without also verifying RainbowKit compatibility."
   },
