@@ -14,10 +14,7 @@
   --color-status-cancelled: #71717a;
   --color-border: #27272a;
   --color-border-strong: #3f3f46;
-  --font-mono: var(--font-geist-mono), 'JetBrains Mono', monospace;
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  /* Default body font = mono. Terminal aesthetic throughout. */
-  --default-font-family: var(--font-mono);
+  --font-mono: var(--font-mono-variable), 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 @keyframes blink {
@@ -38,14 +35,14 @@
   background-size: 40px 40px;
 }
 
-/* Improve readability of mono body text by tightening letter-spacing */
+/* JetBrains Mono ligatures + stylistic alternates */
 body {
-  font-feature-settings: 'liga' 1, 'calt' 1;
+  font-feature-settings: 'liga' 1, 'calt' 1, 'zero' 1, 'ss01' 1, 'ss02' 1;
   letter-spacing: -0.01em;
 }
 
-/* Big display headlines look chunky with mono — squeeze them */
+/* Big display headlines */
 h1, .display {
   letter-spacing: -0.04em;
-  font-feature-settings: 'ss01' 1, 'cv01' 1, 'cv02' 1;
+  font-feature-settings: 'liga' 1, 'ss01' 1, 'zero' 1;
 }

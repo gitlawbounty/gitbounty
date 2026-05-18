@@ -1,8 +1,14 @@
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
+import { JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Toaster } from 'sonner'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono-variable',
+  weight: ['400', '500', '600', '700', '800'],
+})
 
 const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitbounty.app'
 
@@ -46,11 +52,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${GeistMono.className} ${GeistMono.variable} ${GeistSans.variable}`}
-    >
-      <body className="bg-base text-primary antialiased min-h-screen">
+    <html lang="en" className={jetbrainsMono.variable}>
+      <body className={`${jetbrainsMono.className} bg-base text-primary antialiased min-h-screen`}>
         <Providers>{children}</Providers>
         <Toaster theme="dark" position="bottom-right" />
       </body>
