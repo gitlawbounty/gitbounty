@@ -28,7 +28,7 @@ Analyze an open bounty and return structured insight: difficulty, required skill
 
 ```bash
 # via gitbounty REST API
-curl https://gitbounty.app/api/scout/42
+curl https://gitlawbounty.xyz/api/scout/42
 
 # returns the analyze output above
 ```

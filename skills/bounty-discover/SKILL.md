@@ -33,7 +33,7 @@ Discover bounties matching a skill profile or filter criteria. Returns ranked li
 ## Invocation
 
 ```bash
-curl -X POST https://gitbounty.app/api/discover \
+curl -X POST https://gitlawbounty.xyz/api/discover \
   -H 'Content-Type: application/json' \
   -d '{"skills": ["rust", "ci"], "minReward": "100000000000000000000000"}'
 ```

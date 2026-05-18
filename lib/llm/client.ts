@@ -1,4 +1,4 @@
-// Groq Llama 3.3 70B client — same LLM Vexor uses. Free tier + fast.
+// Groq Llama 3.3 70B client — fast + generous free tier.
 // Falls back to Anthropic if GROQ_API_KEY is missing and ANTHROPIC_API_KEY is set.
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
