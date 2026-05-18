@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { commonHeaders } from '@/lib/api/serialize'
 import { env } from '@/lib/env'
 import { addresses } from '@/lib/contracts/addresses'
@@ -8,8 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.verce
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  return NextResponse.json(
-    {
+  const payload = {
       name: 'gitbounty',
       tagline: 'agent-native bounty terminal for the gitlawb network',
       version: '0.1.0-alpha',
@@ -69,12 +67,15 @@ export async function GET() {
         // Manifest (self)
         { method: 'GET', path: '/api/manifest', description: 'this manifest' },
       ],
+    }
+
+  // Pretty-print so the response is human-readable when opened in a browser tab.
+  // Still valid JSON for agents/curl.
+  return new Response(JSON.stringify(payload, null, 2), {
+    headers: {
+      ...commonHeaders('rpc'),
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 's-maxage=30, stale-while-revalidate=120',
     },
-    {
-      headers: {
-        ...commonHeaders('rpc'),
-        'Cache-Control': 's-maxage=30, stale-while-revalidate=120',
-      },
-    },
-  )
+  })
 }
