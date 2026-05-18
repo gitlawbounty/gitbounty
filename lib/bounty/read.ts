@@ -113,7 +113,7 @@ export async function fetchRecentEvents(fromBlock: bigint, limit = 20): Promise<
         bountyId: Number((log.args as { bountyId: bigint }).bountyId),
         txHash: log.transactionHash,
         blockNumber: log.blockNumber,
-        timestamp: BigInt(0),
+        timestamp: 0n,
         data: log.args as Record<string, unknown>,
       })
     }
