@@ -4,7 +4,7 @@ import { http } from 'viem'
 import { env } from './env'
 
 export const wagmiConfig = getDefaultConfig({
-  appName: 'Bounty Beacon',
+  appName: 'gitbounty',
   projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   chains: [baseSepolia],
   transports: {

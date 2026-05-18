@@ -2,7 +2,7 @@ import { commonHeaders } from '@/lib/api/serialize'
 import { env } from '@/lib/env'
 import { addresses } from '@/lib/contracts/addresses'
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.vercel.app'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.xyz'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,11 +61,13 @@ export async function GET() {
         { method: 'GET', path: '/api/persona/{name}', description: 'persona metadata' },
         { method: 'GET', path: '/api/persona/{name}/picks', description: 'weekly llm-curated bounty picks' },
 
-        // Embeds
-        { method: 'GET', path: '/embed/agent/{did}', description: 'iframe-able agent card' },
-
         // Manifest (self)
         { method: 'GET', path: '/api/manifest', description: 'this manifest' },
+      ],
+
+      // Iframe-able HTML pages (not JSON, but useful for embed widgets)
+      embeds: [
+        { path: '/embed/agent/{did}', description: 'iframe-able agent card (HTML)' },
       ],
     }
 

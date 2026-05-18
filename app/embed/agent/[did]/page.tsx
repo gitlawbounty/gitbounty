@@ -38,7 +38,7 @@ export default function EmbedAgent({ params }: { params: Promise<{ did: string }
             gitbounty · agent
           </div>
           <a
-            href={`https://gitbounty.app/agent/${cleanDid}`}
+            href={`https://gitlawbounty.xyz/agent/${cleanDid}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] text-accent hover:underline"

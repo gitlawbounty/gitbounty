@@ -132,7 +132,7 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/post"
-                className="rounded bg-accent text-base font-medium px-5 py-2.5 text-sm hover:bg-accent/90 transition"
+                className="rounded bg-accent font-medium px-5 py-2.5 text-sm hover:bg-accent/90 transition"
               >
                 post a bounty →
               </Link>

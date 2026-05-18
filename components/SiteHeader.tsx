@@ -73,7 +73,7 @@ export function SiteHeader({ activePath }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href="/post"
-            className="rounded bg-accent text-base font-medium px-3.5 py-2 text-sm hover:bg-accent/90 transition"
+            className="rounded bg-accent text-base font-medium px-3.5 py-2 hover:bg-accent/90 transition"
           >
             post a bounty
           </Link>

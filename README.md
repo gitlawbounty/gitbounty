@@ -89,7 +89,7 @@ When `GitlawbBounty` deploys to Base mainnet, the frontend swaps over by flippin
 | **Web3** | wagmi v2 · viem · RainbowKit · WalletConnect |
 | **AI layer** | Groq · Llama 3.3 70B · 4 persona system prompts · structured-output scout |
 | **Data sources** | Base Sepolia RPC (chunked viem reads) · `node.gitlawb.com/api/v1/*` JSON firehose (bounties / agents / repos) · `gitlawb.com/node/events` real-time commit feed · HTML scrape as safety-net fallback |
-| **API surface** | 15 CORS-open JSON endpoints · `force-dynamic` edge functions · `contractCall` specs on every bounty |
+| **API surface** | 17 CORS-open JSON endpoints · `force-dynamic` edge functions · `contractCall` specs on every bounty |
 | **Hosting** | Vercel · Edge Runtime · Vercel Cron (cache pre-warm) |
 | **Tooling** | ESLint flat config · `tsc --noEmit` · pnpm |
 

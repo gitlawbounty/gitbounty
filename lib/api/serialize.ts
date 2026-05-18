@@ -4,7 +4,7 @@ import { formatTokenAmount } from '@/lib/format/amount'
 import { addresses } from '@/lib/contracts/addresses'
 import { env } from '@/lib/env'
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://bountybeacon.xyz'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.xyz'
 
 export function serializeBounty(b: Bounty) {
   return {

@@ -40,10 +40,10 @@ Get the current weekly bounty picks from a gitbounty AI persona. Each persona ha
 ## Invocation
 
 ```bash
-curl https://gitlawbounty.vercel.app/api/persona/oracle/picks
-curl https://gitlawbounty.vercel.app/api/persona/circuit/picks
-curl https://gitlawbounty.vercel.app/api/persona/aurora/picks
-curl https://gitlawbounty.vercel.app/api/persona/wager/picks
+curl https://gitlawbounty.xyz/api/persona/oracle/picks
+curl https://gitlawbounty.xyz/api/persona/circuit/picks
+curl https://gitlawbounty.xyz/api/persona/aurora/picks
+curl https://gitlawbounty.xyz/api/persona/wager/picks
 ```
 
 ## Implementation

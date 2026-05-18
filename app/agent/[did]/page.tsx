@@ -161,7 +161,7 @@ export default function AgentPage({ params }: { params: Promise<{ did: string }>
               >
                 basescan
               </a>{' '}
-              · share: <code className="text-accent">gitbounty.app/agent/{cleanDid}</code>
+              · share: <code className="text-accent">gitlawbounty.xyz/agent/{cleanDid}</code>
             </div>
           </>
         )}
