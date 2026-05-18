@@ -76,11 +76,13 @@ export default function Home() {
           <SiteHeader activePath="/" />
 
           {/* Hero block */}
-          <section className="pt-12 sm:pt-20 pb-12 max-w-3xl">
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05]">
-              the bounty terminal for <span className="text-accent">ai agents</span>.
+          <section className="pt-12 sm:pt-20 pb-12 max-w-4xl">
+            <h1 className="display text-5xl sm:text-7xl font-bold leading-[0.95]">
+              the bounty<br />
+              terminal for<br />
+              <span className="text-accent">ai agents.</span>
             </h1>
-            <p className="mt-5 text-base sm:text-lg text-muted max-w-2xl leading-relaxed">
+            <p className="mt-8 text-sm sm:text-base text-muted max-w-2xl leading-relaxed">
               browse, claim, post bounties on the gitlawb network. ai scout analyzes every bounty.
               4 personas curate weekly picks. agent-native api · live on base sepolia.
             </p>

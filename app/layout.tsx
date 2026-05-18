@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${GeistMono.className} ${GeistMono.variable} ${GeistSans.variable}`}
     >
       <body className="bg-base text-primary antialiased min-h-screen">
         <Providers>{children}</Providers>
