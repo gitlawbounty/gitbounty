@@ -81,8 +81,32 @@ export default function LivePage() {
 
   const items = useMemo<FeedItem[]>(() => {
     const out: FeedItem[] = []
+    const now = Date.now()
 
-    // On-chain bounty events
+    // Parse "14d ago" / "3h ago" / "30m ago" → real timestampMs
+    const parseAge = (label: string): number => {
+      const m = label.match(/(\d+)\s*([smhd])/i)
+      if (!m) return now
+      const n = Number.parseInt(m[1], 10)
+      const unit = m[2].toLowerCase()
+      const sec = unit === 'd' ? 86400 : unit === 'h' ? 3600 : unit === 'm' ? 60 : 1
+      return now - n * sec * 1000
+    }
+
+    // On-chain bounty events — treat block number proximity to "head" as recency
+    // (recent block = closer to now). We don't have block timestamps without extra RPC,
+    // so approximate with: now - (current_block - event_block) * 2s
+    const latestBlockEstimate = Math.max(
+      ...(rawEvents ?? []).map((e) => Number(e.blockNumber)),
+      ...(didSnap?.events ?? []).map((e) => Number(e.blockNumber)),
+      0,
+    )
+    const blockToMs = (block: number) => {
+      if (latestBlockEstimate === 0) return now
+      const blocksAgo = latestBlockEstimate - block
+      return now - blocksAgo * 2000 // base ~2s blocks
+    }
+
     for (const ev of rawEvents ?? []) {
       const b = onChain.find((x) => x.id === ev.bountyId)
       out.push({
@@ -95,12 +119,12 @@ export default function LivePage() {
           : 'on-chain event',
         did: b?.claimantDid || b?.creator,
         ageLabel: '',
-        timestampMs: Number(ev.blockNumber) * 1000, // proxy
+        timestampMs: blockToMs(Number(ev.blockNumber)),
         link: `/bounty/${ev.bountyId}`,
       })
     }
 
-    // Off-chain bounties as "appeared on gitlawb" events
+    // Off-chain bounties — parse age label into real timestamp
     for (const b of offSnap?.bounties ?? []) {
       out.push({
         id: `off-${b.uuid}`,
@@ -111,12 +135,12 @@ export default function LivePage() {
         amount: b.amount,
         did: b.did,
         ageLabel: b.ageLabel,
-        timestampMs: 0,
+        timestampMs: parseAge(b.ageLabel),
         link: b.url,
       })
     }
 
-    // On-chain DID registrations — new agents joining the network
+    // On-chain DID registrations
     for (const did of didSnap?.events ?? []) {
       out.push({
         id: `did-${did.txHash}`,
@@ -126,12 +150,12 @@ export default function LivePage() {
         detail: `registered on GitlawbDIDRegistry · owner ${did.owner.slice(0, 8)}…`,
         did: did.did,
         ageLabel: '',
-        timestampMs: Number(did.blockNumber) * 1000,
+        timestampMs: blockToMs(Number(did.blockNumber)),
         link: `/agent/${encodeURIComponent(did.did.replace(/^did:[^:]+:/, ''))}`,
       })
     }
 
-    // Repos appearing in bounty data → distinct repos as "active" events
+    // Repos derived from off-chain bounties (deduplicated)
     const seenRepos = new Set<string>()
     for (const b of offSnap?.bounties ?? []) {
       if (!b.did || !b.repoName) continue
@@ -146,7 +170,7 @@ export default function LivePage() {
         detail: `${b.did.slice(0, 12)}…/${b.repoName} · bounty volume detected`,
         did: b.did,
         ageLabel: b.ageLabel,
-        timestampMs: 0,
+        timestampMs: parseAge(b.ageLabel),
         link: `https://gitlawb.com/${b.did}/${b.repoName}`,
       })
     }
