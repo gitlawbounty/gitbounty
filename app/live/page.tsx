@@ -140,7 +140,7 @@ export default function LivePage() {
       })
     }
 
-    // On-chain DID registrations
+    // On-chain DID registrations (real registry events)
     for (const did of didSnap?.events ?? []) {
       out.push({
         id: `did-${did.txHash}`,
@@ -152,6 +152,36 @@ export default function LivePage() {
         ageLabel: '',
         timestampMs: blockToMs(Number(did.blockNumber)),
         link: `/agent/${encodeURIComponent(did.did.replace(/^did:[^:]+:/, ''))}`,
+      })
+    }
+
+    // Synthetic agent appearances: every distinct DID that posted a bounty
+    // is effectively an active agent on the network — even if no on-chain
+    // DID Registry event was emitted in our window.
+    const seenAgents = new Set<string>(
+      (didSnap?.events ?? []).map((e) => e.did.replace(/^did:[^:]+:/, '')),
+    )
+    const agentFirstSeen = new Map<string, string>() // did → earliest ageLabel
+    for (const b of offSnap?.bounties ?? []) {
+      if (!b.did) continue
+      if (seenAgents.has(b.did)) continue
+      // Track the OLDEST age for this agent (= when first seen)
+      const prev = agentFirstSeen.get(b.did)
+      if (!prev || parseAge(b.ageLabel) < parseAge(prev)) {
+        agentFirstSeen.set(b.did, b.ageLabel)
+      }
+    }
+    for (const [agentDid, label] of agentFirstSeen) {
+      out.push({
+        id: `agent-${agentDid}`,
+        kind: 'DIDRegistered',
+        source: 'off-chain',
+        title: `agent active: ${agentDid.slice(0, 12)}…`,
+        detail: `first seen on gitlawb network · ${label}`,
+        did: agentDid,
+        ageLabel: label,
+        timestampMs: parseAge(label),
+        link: `/agent/${encodeURIComponent(agentDid)}`,
       })
     }
 

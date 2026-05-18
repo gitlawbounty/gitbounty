@@ -42,7 +42,7 @@ export interface DidRegistrationEvent {
 }
 
 export async function fetchDidRegistrations(
-  windowBlocks = 50_000n,
+  windowBlocks = 500_000n,
 ): Promise<DidRegistrationEvent[]> {
   try {
     const latest = await client.getBlockNumber()
