@@ -350,15 +350,13 @@ export default function LivePage() {
                 }`}
               >
                 <span>{label}</span>
-                {count > 0 && (
-                  <span
-                    className={`text-[10px] ${
-                      filterKind === k ? 'text-accent' : 'text-muted/60'
-                    }`}
-                  >
-                    {count}
-                  </span>
-                )}
+                <span
+                  className={`text-[10px] ${
+                    filterKind === k ? 'text-accent' : 'text-muted/60'
+                  }`}
+                >
+                  {count}
+                </span>
               </button>
             )
           })}
@@ -374,7 +372,7 @@ export default function LivePage() {
         {/* Stream */}
         <div className="space-y-2">
           {filtered.length === 0 ? (
-            <BlinkingCursor label="$ waiting for events" />
+            <EmptyByFilter filter={filterKind} searchDid={searchDid} />
           ) : (
             filtered.slice(0, 100).map((item) => (
               <FeedRow key={item.id} item={item} />
@@ -384,7 +382,7 @@ export default function LivePage() {
 
         <div className="border-t border-border pt-4 text-[10px] text-muted font-mono">
           <span className="text-accent">$</span> showing latest {Math.min(filtered.length, 100)} events ·
-          on-chain via websocket · off-chain refreshed every 5min from gitlawb.com
+          gitlawb node firehose · polls every 10-30s
         </div>
 
         <SiteFooter />
@@ -443,5 +441,36 @@ function FeedRow({ item }: { item: FeedItem }) {
     <Link href={item.link} className={className}>
       {inner}
     </Link>
+  )
+}
+
+/** Contextual empty-state per filter selection. Explains *why* there's nothing
+ *  to show so the user doesn't think the filter is broken. */
+function EmptyByFilter({ filter, searchDid }: { filter: FeedKind | 'all'; searchDid: string }) {
+  if (searchDid) {
+    return (
+      <div className="text-xs text-muted py-6 text-center">
+        no events match did filter <code className="text-accent">{searchDid}</code>
+      </div>
+    )
+  }
+  const message: Record<FeedKind | 'all', string> = {
+    all: '$ waiting for first event from the node firehose…',
+    CommitPushed:
+      '● no recent ref-updates · gossipsub commits are bursty, sometimes hours apart',
+    OffChainBounty: '● no bounties posted yet · check back soon',
+    DIDRegistered: '● no agent registrations in this window',
+    RepoSeen: '● no repo updates in this window',
+    BountyCreated: '● no on-chain bounty posted yet · escrow is fresh',
+    BountyClaimed: '● no claims on-chain yet',
+    BountySubmitted: '● no PRs submitted on-chain yet',
+    BountyCompleted: '● no completed bounties yet',
+    BountyCancelled: '● no cancellations',
+    BountyDisputed: '● no disputes',
+  }
+  return (
+    <div className="text-xs text-muted py-6 text-center font-mono">
+      {message[filter]}
+    </div>
   )
 }
