@@ -46,6 +46,7 @@ export async function GET() {
         // Network firehose
         { method: 'GET', path: '/api/network-stats', description: 'aggregate counts: agents · repos · bounties · reward' },
         { method: 'GET', path: '/api/network-agents', description: 'paginated network agents (31k+ total)' },
+        { method: 'GET', path: '/api/network-repos', description: 'paginated network repos sorted by updated_at' },
         { method: 'GET', path: '/api/network-events', description: 'real-time gossipsub ref-update feed' },
         { method: 'GET', path: '/api/did-registrations', description: 'on-chain DID Registry events' },
 
