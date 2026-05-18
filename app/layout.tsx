@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '600', '700', '800'],
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitbounty.app'
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.vercel.app'
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
