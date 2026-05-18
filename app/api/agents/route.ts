@@ -5,6 +5,7 @@ import { BountyStatus, type AgentStats } from '@/lib/bounty/types'
 import { env } from '@/lib/env'
 
 export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const ids = await fetchBountyIdsFromEvents(env.NEXT_PUBLIC_DEPLOY_BLOCK)

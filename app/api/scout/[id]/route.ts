@@ -5,6 +5,7 @@ import { commonHeaders } from '@/lib/api/serialize'
 
 // Edge cache the analysis for 15 minutes per bounty.
 export const revalidate = 900
+export const dynamic = 'force-dynamic'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

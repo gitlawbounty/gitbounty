@@ -12,6 +12,7 @@ import { activeChain } from '@/lib/chains'
 import { BountyStatus } from '@/lib/bounty/types'
 
 export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {

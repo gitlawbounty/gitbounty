@@ -6,6 +6,7 @@ import { env } from '@/lib/env'
 
 // Cache for an hour — picks are weekly, no need to regenerate per request.
 export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export async function GET(_: Request, { params }: { params: Promise<{ name: string }> }) {
   const { name } = await params

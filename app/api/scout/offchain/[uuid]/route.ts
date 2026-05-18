@@ -4,6 +4,7 @@ import { analyzeOffChainBounty } from '@/lib/llm/scout-offchain'
 import { commonHeaders } from '@/lib/api/serialize'
 
 export const revalidate = 900
+export const dynamic = 'force-dynamic'
 
 export async function GET(_: Request, { params }: { params: Promise<{ uuid: string }> }) {
   const { uuid } = await params

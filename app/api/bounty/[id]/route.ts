@@ -3,6 +3,7 @@ import { fetchBounties } from '@/lib/bounty/read'
 import { serializeBounty, commonHeaders } from '@/lib/api/serialize'
 
 export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

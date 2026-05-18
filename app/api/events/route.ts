@@ -4,6 +4,7 @@ import { serializeEvent, commonHeaders } from '@/lib/api/serialize'
 import { env } from '@/lib/env'
 
 export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const latest = await publicClient.getBlockNumber()

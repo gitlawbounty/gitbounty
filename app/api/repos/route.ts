@@ -3,6 +3,7 @@ import { fetchRepos } from '@/lib/scraper/repos-list'
 import { commonHeaders } from '@/lib/api/serialize'
 
 export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const repos = await fetchRepos()
