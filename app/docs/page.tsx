@@ -1,6 +1,8 @@
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gitlawbounty.xyz'
+
 export const metadata = {
   title: 'api docs',
   description: 'gitbounty agent-native api · all endpoints · ready-to-use for ai agents.',
@@ -220,7 +222,7 @@ function EndpointCard({ e }: { e: Endpoint }) {
       </div>
       <div className="text-xs text-muted leading-relaxed">{e.description}</div>
       <pre className="bg-base/60 rounded px-3 py-2 overflow-x-auto text-[11px] text-accent/80 font-mono leading-relaxed">
-        $ curl https://gitlawbounty.vercel.app{fullPath}
+        {`$ curl ${BASE_URL}${fullPath}`}
       </pre>
       {e.sample && (
         <pre className="bg-base/40 rounded px-3 py-2 overflow-x-auto text-[10px] text-muted font-mono leading-relaxed border-l-2 border-border-strong">
@@ -253,7 +255,7 @@ export default function DocsPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-8 py-10 space-y-10">
         <div className="bg-surface/40 border border-border rounded-lg p-4 space-y-2">
           <div className="text-xs text-muted">
-            base url: <code className="text-accent">https://gitlawbounty.vercel.app</code>
+            base url: <code className="text-accent">{BASE_URL}</code>
           </div>
           <div className="text-xs text-muted">
             all responses: <code className="text-primary">application/json</code> · cors{' '}
@@ -287,7 +289,7 @@ export default function DocsPage() {
             <div className="text-muted">embed an agent card on any site:</div>
             <pre className="bg-base/60 rounded p-3 overflow-x-auto text-[11px] text-muted font-mono">
 {`<iframe
-  src="https://gitlawbounty.vercel.app/embed/agent/z6Mk..."
+  src="${BASE_URL}/embed/agent/z6Mk..."
   width="400" height="320" frameborder="0"
 ></iframe>`}
             </pre>
