@@ -35,14 +35,21 @@ async function getLogsChunked(opts: {
   let cursor = opts.fromBlock
   while (cursor <= opts.toBlock) {
     const end = cursor + MAX_BLOCK_RANGE > opts.toBlock ? opts.toBlock : cursor + MAX_BLOCK_RANGE
-    const logs = (await client.getContractEvents({
-      address: addresses.bounty,
-      abi: bountyAbi,
-      eventName: opts.eventName,
-      fromBlock: cursor,
-      toBlock: end,
-    })) as unknown as AnyContractEvent[]
-    all.push(...logs)
+    try {
+      const logs = (await client.getContractEvents({
+        address: addresses.bounty,
+        abi: bountyAbi,
+        eventName: opts.eventName,
+        fromBlock: cursor,
+        toBlock: end,
+      })) as unknown as AnyContractEvent[]
+      all.push(...logs)
+    } catch (err) {
+      // RPC providers can rate-limit eth_getLogs by block range (Alchemy free
+      // tier caps at 10 blocks). Rather than crash the route, log and continue
+      // — the on-chain escrow contract has 0 events in this range anyway.
+      console.warn(`[getLogsChunked] ${opts.eventName} chunk ${cursor}..${end} failed:`, String(err).slice(0, 160))
+    }
     cursor = end + 1n
   }
   return all

@@ -54,9 +54,40 @@ export async function GET() {
       { headers: commonHeaders('rpc') },
     )
   } catch (err) {
+    // Don't leak RPC URLs (Alchemy keys etc.). Return a graceful empty payload
+    // so clients can still parse the response shape — this is a discovery API,
+    // not a critical write path.
+    const detail = String(err).replace(/https?:\/\/[^\s)"]+/g, '<rpc-url>').slice(0, 200)
     return NextResponse.json(
-      { error: 'rpc unavailable', detail: String(err) },
-      { status: 503, headers: { 'Retry-After': '60' } },
+      {
+        meta: {
+          chainId: env.NEXT_PUBLIC_CHAIN_ID,
+          chainName: activeChain.name,
+          contractAddress: addresses.bounty,
+          tokenAddress: addresses.token,
+          blockNumber: null,
+          generatedAt: new Date().toISOString(),
+          source: 'rpc',
+          error: detail,
+        },
+        stats: {
+          totalBounties: 0,
+          openBounties: 0,
+          claimedBounties: 0,
+          completedBounties: 0,
+          totalPaidOut: '0',
+          totalFeesCollected: '0',
+          activeAgents: 0,
+        },
+        bounties: [],
+      },
+      {
+        status: 200,
+        headers: {
+          ...commonHeaders('rpc'),
+          'Cache-Control': 's-maxage=10, stale-while-revalidate=60',
+        },
+      },
     )
   }
 }

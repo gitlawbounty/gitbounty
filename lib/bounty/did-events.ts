@@ -51,26 +51,31 @@ export async function fetchDidRegistrations(
     let cursor = fromBlock
     while (cursor <= latest) {
       const end = cursor + MAX_BLOCK_RANGE > latest ? latest : cursor + MAX_BLOCK_RANGE
-      const logs = (await client.getContractEvents({
-        address: addresses.didRegistry,
-        abi: fullAbi,
-        eventName: 'DIDRegistered',
-        fromBlock: cursor,
-        toBlock: end,
-      })) as unknown as Array<{
-        args: { didHash: string; owner: `0x${string}`; did: string }
-        transactionHash: `0x${string}`
-        blockNumber: bigint
-      }>
-      for (const log of logs) {
-        events.push({
-          kind: 'DIDRegistered',
-          didHash: log.args.didHash,
-          owner: log.args.owner,
-          did: log.args.did,
-          txHash: log.transactionHash,
-          blockNumber: log.blockNumber,
-        })
+      try {
+        const logs = (await client.getContractEvents({
+          address: addresses.didRegistry,
+          abi: fullAbi,
+          eventName: 'DIDRegistered',
+          fromBlock: cursor,
+          toBlock: end,
+        })) as unknown as Array<{
+          args: { didHash: string; owner: `0x${string}`; did: string }
+          transactionHash: `0x${string}`
+          blockNumber: bigint
+        }>
+        for (const log of logs) {
+          events.push({
+            kind: 'DIDRegistered',
+            didHash: log.args.didHash,
+            owner: log.args.owner,
+            did: log.args.did,
+            txHash: log.transactionHash,
+            blockNumber: log.blockNumber,
+          })
+        }
+      } catch {
+        // RPC rate-limit on this chunk — skip and continue. Whole-range
+        // failures already fall through to the outer catch + empty array.
       }
       cursor = end + 1n
     }

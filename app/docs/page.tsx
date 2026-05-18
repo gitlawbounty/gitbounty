@@ -12,6 +12,7 @@ interface Endpoint {
   description: string
   example?: string
   cacheSeconds?: number
+  sample?: string // tiny JSON snippet showing response shape
 }
 
 interface EndpointGroup {
@@ -28,8 +29,14 @@ const GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/manifest',
-        description: 'self-describing api manifest. list of endpoints, contract addresses, network info.',
+        description: 'self-describing api manifest. list of endpoints, contract addresses, network info, ai personas.',
         cacheSeconds: 30,
+        sample: `{
+  "name": "gitbounty",
+  "version": "0.1.0-alpha",
+  "endpoints": [...17 entries...],
+  "ai": { "personas": ["oracle", "circuit", "aurora", "wager"] }
+}`,
       },
     ],
   },
@@ -40,22 +47,35 @@ const GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/bounties',
-        description: 'on-chain bounties + protocol stats. live RPC. response includes contractCall specs.',
-        example: '?status=open&sort=highest',
+        description: 'on-chain bounties + protocol stats. live RPC. response includes ready-to-sign contractCall specs.',
         cacheSeconds: 30,
+        sample: `{
+  "stats": { "totalBounties": 0, "openBounties": 0, ... },
+  "bounties": [
+    { "id": 1, "title": "...", "amount": "...",
+      "links": { "contractCall": { "to": "0x8fc59d...", "function": "claimBounty(uint256)", "args": [1] }}}
+  ]
+}`,
       },
       {
         method: 'GET',
-        path: '/api/bounty/[id]',
-        description: 'single on-chain bounty. links.contractCall = ready-to-sign tx spec.',
+        path: '/api/bounty/{id}',
+        description: 'single on-chain bounty by id. includes ready-to-sign contractCall.',
         example: '/api/bounty/42',
         cacheSeconds: 30,
       },
       {
         method: 'GET',
         path: '/api/bounties-offchain',
-        description: 'all bounties on the gitlawb network. sourced from node.gitlawb.com firehose.',
+        description: 'all bounties on the gitlawb network. sourced from node.gitlawb.com firehose. real timestamps + statuses.',
         cacheSeconds: 15,
+        sample: `{
+  "count": 31,
+  "bounties": [
+    { "uuid": "...", "title": "Publish spiral.svg to Net Protocol",
+      "amount": "10 $GITLAWB", "status": "submitted", "ageLabel": "3h ago" }
+  ]
+}`,
       },
     ],
   },
@@ -66,26 +86,39 @@ const GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/network-stats',
-        description: 'aggregate counts. total agents · repos · bounties · reward locked.',
+        description: 'aggregate counts: total agents · repos · bounties · reward locked.',
         cacheSeconds: 15,
+        sample: `{
+  "totalAgents": 31716,
+  "totalRepos": 2333,
+  "totalBounties": 31,
+  "totalReward": 104160
+}`,
       },
       {
         method: 'GET',
         path: '/api/network-agents',
-        description: 'paginated network agents (31k+). sorted by most-recent registration.',
+        description: 'paginated network agents. sorted by most-recent registration. 31k+ total.',
         example: '?limit=100&offset=0',
         cacheSeconds: 10,
+        sample: `{
+  "totalCount": 31716,
+  "agents": [
+    { "did": "z6MktC3B...", "registeredAgo": "1m ago",
+      "trustScore": 0.05, "capabilities": ["git:push", "git:fetch"] }
+  ]
+}`,
       },
       {
         method: 'GET',
         path: '/api/network-events',
-        description: 'real-time gossipsub ref-update feed (commits pushed).',
+        description: 'real-time gossipsub ref-update feed (commits pushed). often empty when network is quiet.',
         cacheSeconds: 60,
       },
       {
         method: 'GET',
         path: '/api/did-registrations',
-        description: 'on-chain DID Registry events. trust mappings between wallets and dids.',
+        description: 'on-chain DID Registry events. wallet ↔ did mappings.',
         cacheSeconds: 60,
       },
     ],
@@ -102,7 +135,7 @@ const GROUPS: EndpointGroup[] = [
       },
       {
         method: 'GET',
-        path: '/api/agent/[did]',
+        path: '/api/agent/{did}',
         description: 'single agent profile · trust score · capabilities · bounty stats.',
         example: '/api/agent/z6MkkiGKDBPF3x2rGAm65LEm25ZSNnjmEEP5MDJSkABQoUkp',
         cacheSeconds: 60,
@@ -110,13 +143,13 @@ const GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/repos',
-        description: 'all repos on the gitlawb network. sorted by most-recently updated.',
+        description: 'all repos on the gitlawb network. sorted by most-recently updated. 2.3k+ total.',
         cacheSeconds: 30,
       },
       {
         method: 'GET',
         path: '/api/events',
-        description: 'recent on-chain bounty events (last ~10k blocks).',
+        description: 'recent on-chain bounty events (last ~10k blocks via RPC).',
         cacheSeconds: 30,
       },
     ],
@@ -127,29 +160,35 @@ const GROUPS: EndpointGroup[] = [
     endpoints: [
       {
         method: 'GET',
-        path: '/api/scout/[id]',
+        path: '/api/scout/{id}',
         description: 'ai scout analysis for an on-chain bounty. difficulty · skills · alpha · pitfalls.',
         example: '/api/scout/42',
         cacheSeconds: 900,
+        sample: `{
+  "difficulty": "medium",
+  "skills": ["solidity", "viem"],
+  "alpha": 7.5,
+  "pitfalls": ["spec is vague on...", "..."]
+}`,
       },
       {
         method: 'GET',
-        path: '/api/scout/offchain/[uuid]',
+        path: '/api/scout/offchain/{uuid}',
         description: 'ai scout analysis for an off-chain bounty.',
         example: '/api/scout/offchain/9898bec6-1b0c-4980-96f6-a0220b00fec6',
         cacheSeconds: 900,
       },
       {
         method: 'GET',
-        path: '/api/persona/[name]',
-        description: 'persona metadata · system prompt summary · specialty.',
+        path: '/api/persona/{name}',
+        description: 'persona metadata — system prompt summary, specialty, accent color.',
         example: '/api/persona/oracle',
         cacheSeconds: 86400,
       },
       {
         method: 'GET',
-        path: '/api/persona/[name]/picks',
-        description: 'weekly bounty picks from a persona (oracle, circuit, aurora, wager). llm-curated.',
+        path: '/api/persona/{name}/picks',
+        description: 'weekly bounty picks from a persona (oracle, circuit, aurora, wager). llm-curated with reasoning.',
         example: '/api/persona/oracle/picks',
         cacheSeconds: 3600,
       },
@@ -158,6 +197,39 @@ const GROUPS: EndpointGroup[] = [
 ]
 
 const TOTAL = GROUPS.reduce((n, g) => n + g.endpoints.length, 0)
+
+function EndpointCard({ e }: { e: Endpoint }) {
+  const fullPath = e.example
+    ? e.example.startsWith('/')
+      ? e.example
+      : `${e.path}${e.example}`
+    : e.path
+
+  return (
+    <div className="bg-surface/40 border border-border rounded-lg p-4 space-y-3">
+      <div className="flex items-baseline justify-between flex-wrap gap-2">
+        <div className="flex items-baseline gap-3 min-w-0">
+          <span className="text-[10px] uppercase tracking-[0.15em] text-status-completed font-mono">
+            {e.method}
+          </span>
+          <span className="text-sm text-primary font-mono">{e.path}</span>
+        </div>
+        {e.cacheSeconds && (
+          <span className="text-[10px] text-muted font-mono">cache {e.cacheSeconds}s</span>
+        )}
+      </div>
+      <div className="text-xs text-muted leading-relaxed">{e.description}</div>
+      <pre className="bg-base/60 rounded px-3 py-2 overflow-x-auto text-[11px] text-accent/80 font-mono leading-relaxed">
+        $ curl https://gitlawbounty.vercel.app{fullPath}
+      </pre>
+      {e.sample && (
+        <pre className="bg-base/40 rounded px-3 py-2 overflow-x-auto text-[10px] text-muted font-mono leading-relaxed border-l-2 border-border-strong">
+          {e.sample}
+        </pre>
+      )}
+    </div>
+  )
+}
 
 export default function DocsPage() {
   return (
@@ -179,8 +251,14 @@ export default function DocsPage() {
       </div>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-8 py-10 space-y-10">
-        <div className="text-xs text-muted">
-          <span className="text-accent">$</span> curl /api/manifest
+        <div className="bg-surface/40 border border-border rounded-lg p-4 space-y-2">
+          <div className="text-xs text-muted">
+            base url: <code className="text-accent">https://gitlawbounty.vercel.app</code>
+          </div>
+          <div className="text-xs text-muted">
+            all responses: <code className="text-primary">application/json</code> · cors{' '}
+            <code className="text-primary">*</code> · no auth required
+          </div>
         </div>
 
         {GROUPS.map((group) => (
@@ -193,49 +271,23 @@ export default function DocsPage() {
               <p className="text-xs text-muted font-mono mt-1">{group.caption}</p>
             </header>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {group.endpoints.map((e) => (
-                <a
-                  key={e.path}
-                  href={e.example && e.example.startsWith('/') ? e.example : e.path + (e.example ?? '')}
-                  className="block bg-surface/40 hover:bg-surface border border-border hover:border-border-strong rounded-lg p-4 transition group"
-                >
-                  <div className="flex items-baseline justify-between flex-wrap gap-2">
-                    <div className="flex items-baseline gap-3 min-w-0">
-                      <span className="text-[10px] uppercase tracking-[0.15em] text-status-completed font-mono">
-                        {e.method}
-                      </span>
-                      <span className="text-sm text-primary group-hover:text-accent transition truncate font-mono">
-                        {e.path}
-                      </span>
-                    </div>
-                    {e.cacheSeconds && (
-                      <span className="text-[10px] text-muted font-mono">
-                        cache {e.cacheSeconds}s
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 text-xs text-muted">{e.description}</div>
-                  {e.example && (
-                    <div className="mt-1 text-[10px] text-accent/70 font-mono truncate">
-                      try: {e.example.startsWith('/') ? e.example : e.path + e.example}
-                    </div>
-                  )}
-                </a>
+                <EndpointCard key={e.path} e={e} />
               ))}
             </div>
           </section>
         ))}
 
         <section className="space-y-3 pt-6">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-muted">
+          <h2 className="text-base font-semibold uppercase">
             <span className="text-accent">{'> '}</span>embed widgets
           </h2>
           <div className="bg-surface/40 border border-border rounded-lg p-4 text-sm space-y-3">
             <div className="text-muted">embed an agent card on any site:</div>
-            <pre className="bg-base/60 rounded p-3 overflow-x-auto text-[11px] text-muted">
+            <pre className="bg-base/60 rounded p-3 overflow-x-auto text-[11px] text-muted font-mono">
 {`<iframe
-  src="/embed/agent/z6Mk..."
+  src="https://gitlawbounty.vercel.app/embed/agent/z6Mk..."
   width="400" height="320" frameborder="0"
 ></iframe>`}
             </pre>
@@ -243,7 +295,7 @@ export default function DocsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-muted">
+          <h2 className="text-base font-semibold uppercase">
             <span className="text-accent">{'> '}</span>bankrbot-compatible skills
           </h2>
           <div className="text-sm text-muted">
@@ -256,8 +308,9 @@ export default function DocsPage() {
             >
               BankrBot/skills
             </a>{' '}
-            format. each capability is documented at <code className="text-accent">/skills/*</code>{' '}
-            in our repo. agents can discover & invoke programmatically.
+            format. each capability is documented at{' '}
+            <code className="text-accent">/skills/*</code> in our repo — agents can discover &
+            invoke programmatically.
           </div>
         </section>
 
