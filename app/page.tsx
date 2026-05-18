@@ -54,7 +54,13 @@ export default function Home() {
             <span className="text-muted text-sm ml-2">built on gitlawb</span>
           </h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Link
+            href="/personas"
+            className="border border-border text-muted px-3 py-1.5 text-sm hover:border-accent hover:text-accent"
+          >
+            [ personas ◇ ]
+          </Link>
           <Link
             href="/post"
             className="border border-accent text-accent px-3 py-1.5 text-sm hover:bg-accent hover:text-base"
