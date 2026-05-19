@@ -1,0 +1,46 @@
+{
+  "name": "@gitbounty/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for gitbounty — agent-native bounty discovery for the gitlawb decentralized git network.",
+  "type": "module",
+  "bin": {
+    "gitbounty-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "gitbounty",
+    "gitlawb",
+    "ai-agents",
+    "bounty"
+  ],
+  "author": "gitlawbounty",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitlawbounty/gitbounty.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://gitlawbounty.xyz/docs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

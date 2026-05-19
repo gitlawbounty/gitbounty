@@ -2,6 +2,7 @@ import { llmCall } from './client'
 import { formatTokenAmount } from '@/lib/format/amount'
 import type { Bounty } from '@/lib/bounty/types'
 import { BountyStatus } from '@/lib/bounty/types'
+import type { OffChainBounty } from '@/lib/scraper/types'
 
 export type PersonaName = 'oracle' | 'circuit' | 'aurora' | 'wager'
 
@@ -162,6 +163,87 @@ Pick up to 3 bounties that fit your specialty. Skip if nothing matches your tast
   })
 
   const parsed = JSON.parse(raw) as { picks: PersonaPick[]; commentary: string }
+  return {
+    persona: personaName,
+    week: getIsoWeek(),
+    picks: parsed.picks ?? [],
+    commentary: parsed.commentary ?? '',
+    generatedAt: new Date().toISOString(),
+  }
+}
+
+/** Variant of {@link generatePicks} that runs against the off-chain bounty
+ *  firehose (node.gitlawb.com data). Returns picks with string bountyId
+ *  (uuid) instead of numeric on-chain id. */
+export interface OffChainPersonaPick {
+  bountyId: string
+  rank: number
+  reasoning: string
+  confidence: number
+}
+
+export interface OffChainPersonaPicksResult {
+  persona: PersonaName
+  week: string
+  picks: OffChainPersonaPick[]
+  commentary: string
+  generatedAt: string
+}
+
+export async function generatePicksOffChain(
+  personaName: PersonaName,
+  bounties: OffChainBounty[],
+): Promise<OffChainPersonaPicksResult> {
+  const persona = PERSONAS[personaName]
+  if (!persona) throw new Error(`unknown persona: ${personaName}`)
+
+  const candidate = bounties.filter(
+    (b) => b.status === 'open' || b.status === 'claimed' || b.status === 'submitted',
+  )
+
+  if (candidate.length === 0) {
+    return {
+      persona: personaName,
+      week: getIsoWeek(),
+      picks: [],
+      commentary: 'no open bounties this week. waiting.',
+      generatedAt: new Date().toISOString(),
+    }
+  }
+
+  const list = candidate
+    .map(
+      (b) =>
+        `${b.uuid} | ${b.title} | ${b.did}/${b.repoName} | reward ${b.amount} | status ${b.status} | age ${b.ageLabel}`,
+    )
+    .join('\n')
+
+  const userMsg = `Available bounties on the gitlawb network this week:
+
+${list}
+
+Pick up to 3 bounties that fit your specialty. Skip if nothing matches your taste. Output ONLY valid JSON:
+{
+  "picks": [
+    { "bountyId": "<uuid string>", "rank": 1, "reasoning": "<1-sentence why YOU pick this, lowercase, in your voice>", "confidence": <0-1 number> }
+  ],
+  "commentary": "<1-2 sentence weekly note in your voice>"
+}`
+
+  const raw = await llmCall({
+    messages: [
+      { role: 'system', content: persona.systemPrompt },
+      { role: 'user', content: userMsg },
+    ],
+    responseFormat: 'json',
+    maxTokens: 900,
+    temperature: 0.55,
+  })
+
+  const parsed = JSON.parse(raw) as {
+    picks: OffChainPersonaPick[]
+    commentary: string
+  }
   return {
     persona: personaName,
     week: getIsoWeek(),

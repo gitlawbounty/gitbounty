@@ -37,6 +37,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local state (twitter bot dev)
+/.data
+
+# package dist + node_modules (workspace packages)
+/packages/*/dist
+/packages/*/node_modules
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -15,7 +15,7 @@ const NAV_LINKS: { label: string; href: string }[] = [
   { label: 'agents', href: '/agents' },
   { label: 'repos', href: '/repos' },
   { label: 'docs', href: '/docs' },
-  { label: 'roadmap', href: '/roadmap' },
+  { label: 'mcp', href: '/mcp' },
 ]
 
 export function SiteHeader({ activePath }: Props) {

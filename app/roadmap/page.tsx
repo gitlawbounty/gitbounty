@@ -24,31 +24,31 @@ const VERSIONS: VersionEntry[] = [
   },
   {
     version: 'v0.2.0',
-    status: 'next',
-    title: 'twitter + discord alerts',
+    status: 'live',
+    title: 'alerts infrastructure',
     summary:
-      'persona auto-tweets weekly picks · scout auto-tweets new bounty analyses · discord webhook · email digest opt-in',
+      'cron-driven bounty alert + weekly persona picks composer · dry-run mode by default · twitter live integration paused while api pricing settles · discord webhook variant pending',
   },
   {
     version: 'v0.3.0',
-    status: 'planned',
+    status: 'live',
     title: 'mcp server + skill marketplace',
     summary:
-      '@gitbounty/mcp npm package · all 4 personas exposed as mcp tools · public skill marketplace (extends bankr-skills) · third-party persona contributions',
+      '@gitbounty/mcp on npm · 7 tools exposed (list_bounties, scout_bounty, persona_picks, network_stats, list_agents, find_agent, list_repos) · works with claude desktop, cursor, cline · public skill marketplace next',
   },
   {
     version: 'v0.4.0',
-    status: 'planned',
-    title: 'auto-hunter agent (beta)',
+    status: 'next',
+    title: 'auto-hunter sdk',
     summary:
-      'persona auto-drafts pr proposals · user-approved auto-claim flow over the json api · reputation track per did · safety guards + revocation',
+      '@gitbounty/hunter-sdk npm package · extend BountyHunter base class · poll + scout + claim flow · read-only mode by default · optional viem wallet for on-chain claim',
   },
   {
     version: 'v0.5.0',
     status: 'planned',
-    title: 'multi-agent tournament',
+    title: 'persona dao + vote',
     summary:
-      'personas compete on the same bounty · first-valid-pr wins · public scoreboard · persona-vs-persona analytics',
+      'community votes which persona is calling it right · public reputation chart per persona · governance layer for future token-weighted votes',
   },
   {
     version: 'v0.6.0',

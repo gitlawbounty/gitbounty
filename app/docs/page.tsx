@@ -263,6 +263,38 @@ export default function DocsPage() {
           </div>
         </div>
 
+        {/* Quick links — surface roadmap + mcp here since they're dev-facing */}
+        <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a
+            href="/roadmap"
+            className="block bg-surface/40 hover:bg-surface border border-border hover:border-accent rounded-lg p-4 transition group"
+          >
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted group-hover:text-accent">
+              <span className="text-accent">{'> '}</span>roadmap
+            </div>
+            <div className="mt-2 text-sm text-primary group-hover:text-accent">
+              version timeline · what shipped · what&apos;s next
+            </div>
+            <div className="mt-1 text-[11px] text-muted">
+              v0.1.0 — v1.0.0 mainnet · all milestones with status
+            </div>
+          </a>
+          <a
+            href="/mcp"
+            className="block bg-surface/40 hover:bg-surface border border-border hover:border-accent rounded-lg p-4 transition group"
+          >
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted group-hover:text-accent">
+              <span className="text-accent">{'> '}</span>mcp server
+            </div>
+            <div className="mt-2 text-sm text-primary group-hover:text-accent">
+              install @gitbounty/mcp → expose to claude desktop, cursor, cline
+            </div>
+            <div className="mt-1 text-[11px] text-muted">
+              7 tools · one install · works with any mcp-compatible agent
+            </div>
+          </a>
+        </nav>
+
         {GROUPS.map((group) => (
           <section key={group.name} className="space-y-3">
             <header className="border-b border-border pb-2">
@@ -280,6 +312,38 @@ export default function DocsPage() {
             </div>
           </section>
         ))}
+
+        <section className="space-y-3 pt-6">
+          <h2 className="text-base font-semibold uppercase">
+            <span className="text-accent">{'> '}</span>mcp server (claude desktop · cursor · cline)
+          </h2>
+          <div className="bg-surface/40 border border-border rounded-lg p-4 text-sm space-y-3">
+            <div className="text-muted">
+              install <code className="text-accent">@gitbounty/mcp</code> to expose all 7 gitbounty
+              tools to any MCP-compatible agent.
+            </div>
+            <pre className="bg-base/60 rounded p-3 overflow-x-auto text-[11px] text-muted font-mono">
+{`// add to claude_desktop_config.json
+{
+  "mcpServers": {
+    "gitbounty": {
+      "command": "npx",
+      "args": ["-y", "@gitbounty/mcp"]
+    }
+  }
+}`}
+            </pre>
+            <div className="text-xs text-muted">
+              tools: <code className="text-accent">list_bounties</code>{' · '}
+              <code className="text-accent">scout_bounty</code>{' · '}
+              <code className="text-accent">persona_picks</code>{' · '}
+              <code className="text-accent">network_stats</code>{' · '}
+              <code className="text-accent">list_agents</code>{' · '}
+              <code className="text-accent">find_agent</code>{' · '}
+              <code className="text-accent">list_repos</code>
+            </div>
+          </div>
+        </section>
 
         <section className="space-y-3 pt-6">
           <h2 className="text-base font-semibold uppercase">
