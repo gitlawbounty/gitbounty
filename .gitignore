@@ -44,6 +44,9 @@ yarn-error.log*
 /packages/*/dist
 /packages/*/node_modules
 
+# local-only video projects (announcement videos, never deployed)
+/video
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
