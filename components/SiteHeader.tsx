@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { WalletButton } from './WalletButton'
@@ -26,7 +26,19 @@ const BUILD_LINKS: { label: string; href: string; desc: string }[] = [
 
 export function SiteHeader({ activePath }: Props) {
   const [buildOpen, setBuildOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const buildActive = BUILD_LINKS.some((l) => l.href === activePath)
+
+  // Open immediately; close after a short grace period so moving the cursor
+  // across the small gap into the panel doesn't snap it shut.
+  const openNow = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setBuildOpen(true)
+  }
+  const closeSoon = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    closeTimer.current = setTimeout(() => setBuildOpen(false), 120)
+  }
 
   return (
     <header className="space-y-4">
@@ -79,14 +91,10 @@ export function SiteHeader({ activePath }: Props) {
           })}
 
           {/* build ▾ — groups the @gitbounty/* dev tools */}
-          <div
-            className="relative"
-            onMouseEnter={() => setBuildOpen(true)}
-            onMouseLeave={() => setBuildOpen(false)}
-          >
+          <div className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
             <button
               type="button"
-              onClick={() => setBuildOpen((v) => !v)}
+              onClick={() => (buildOpen ? setBuildOpen(false) : openNow())}
               aria-expanded={buildOpen}
               className={`px-3 py-1.5 rounded transition flex items-center gap-1 ${
                 buildActive || buildOpen
@@ -101,23 +109,29 @@ export function SiteHeader({ activePath }: Props) {
             </button>
 
             {buildOpen && (
-              <div className="absolute right-0 top-full mt-1 w-60 rounded-lg border border-border bg-surface shadow-lg z-50 p-1">
-                {BUILD_LINKS.map((link) => {
-                  const isActive = activePath === link.href
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setBuildOpen(false)}
-                      className={`block rounded px-3 py-2 transition ${
-                        isActive ? 'bg-accent/10 text-accent' : 'hover:bg-border/40'
-                      }`}
-                    >
-                      <span className={isActive ? 'text-accent' : 'text-primary'}>{link.label}</span>
-                      <span className="block text-[11px] text-muted mt-0.5">{link.desc}</span>
-                    </Link>
-                  )
-                })}
+              // Outer wrapper uses pt-1 (padding, not margin) so the 4px visual
+              // gap stays inside the hover area — no dead zone that closes the menu.
+              <div className="absolute right-0 top-full pt-1 z-50">
+                <div className="w-60 rounded-lg border border-border bg-surface shadow-lg p-1">
+                  {BUILD_LINKS.map((link) => {
+                    const isActive = activePath === link.href
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setBuildOpen(false)}
+                        className={`block rounded px-3 py-2 transition ${
+                          isActive ? 'bg-accent/10 text-accent' : 'hover:bg-border/40'
+                        }`}
+                      >
+                        <span className={isActive ? 'text-accent' : 'text-primary'}>
+                          {link.label}
+                        </span>
+                        <span className="block text-[11px] text-muted mt-0.5">{link.desc}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
             )}
           </div>
