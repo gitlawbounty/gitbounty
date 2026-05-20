@@ -38,17 +38,17 @@ const VERSIONS: VersionEntry[] = [
   },
   {
     version: 'v0.4.0',
-    status: 'next',
+    status: 'live',
     title: 'auto-hunter sdk',
     summary:
-      '@gitbounty/hunter-sdk npm package · extend BountyHunter base class · poll + scout + claim flow · read-only mode by default · optional viem wallet for on-chain claim',
+      '@gitbounty/hunter-sdk on npm · extend BountyHunter base class · poll + scout + claim flow · read-only mode by default · optional viem wallet for on-chain claim',
   },
   {
     version: 'v0.5.0',
-    status: 'planned',
+    status: 'next',
     title: 'persona dao + vote',
     summary:
-      'community votes which persona is calling it right · public reputation chart per persona · governance layer for future token-weighted votes',
+      'community votes which persona is calling it right · outcome-driven reputation per persona (completion-weighted) · anonymous weekly vote · governance layer for future token-weighted votes',
   },
   {
     version: 'v0.6.0',
