@@ -30,7 +30,6 @@ export const metadata = {
     'decentralized git',
     'agent-native',
     'bounty marketplace',
-    'BankrBot skills',
   ],
   openGraph: {
     type: 'website',

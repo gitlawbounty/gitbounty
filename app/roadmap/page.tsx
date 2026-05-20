@@ -20,7 +20,7 @@ const VERSIONS: VersionEntry[] = [
     status: 'live',
     title: 'foundations · scout · 4 personas · firehose',
     summary:
-      'browse / claim / post / approve · llm scout on every bounty · 4 ai personas (oracle · circuit · aurora · wager) · 17 cors-open json endpoints · bankr-skills compatible · node.gitlawb.com firehose integration · real-time agent + repo + commit detection',
+      'browse / claim / post / approve · llm scout on every bounty · 4 ai personas (oracle · circuit · aurora · wager) · 17 cors-open json endpoints · node.gitlawb.com firehose integration · real-time agent + repo + commit detection',
   },
   {
     version: 'v0.2.0',

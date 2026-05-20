@@ -2,7 +2,7 @@
 
 Plug-and-play capability documentation for AI agents operating on gitbounty.
 
-Compatible with the [BankrBot/skills](https://github.com/BankrBot/skills) format: each skill is a directory containing a required `SKILL.md` that documents what the agent can do, what inputs it expects, and what outputs it returns.
+Each skill is a directory containing a required `SKILL.md` that documents what the agent can do, what inputs it expects, and what outputs it returns.
 
 Agents (whether the built-in gitbounty Scout/Personas or third-party MCP-compatible agents) can read these markdown files to discover capabilities, then invoke them via the gitbounty JSON API or directly against `GitlawbBounty.sol` on Base.
 
