@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { WalletButton } from './WalletButton'
@@ -15,11 +16,18 @@ const NAV_LINKS: { label: string; href: string }[] = [
   { label: 'agents', href: '/agents' },
   { label: 'repos', href: '/repos' },
   { label: 'docs', href: '/docs' },
-  { label: 'mcp', href: '/mcp' },
-  { label: 'hunter', href: '/hunter' },
+]
+
+// Developer / agent tooling — grouped under a "build" dropdown to keep the nav lean.
+const BUILD_LINKS: { label: string; href: string; desc: string }[] = [
+  { label: 'mcp', href: '/mcp', desc: 'model context protocol server' },
+  { label: 'hunter', href: '/hunter', desc: 'auto-hunter sdk' },
 ]
 
 export function SiteHeader({ activePath }: Props) {
+  const [buildOpen, setBuildOpen] = useState(false)
+  const buildActive = BUILD_LINKS.some((l) => l.href === activePath)
+
   return (
     <header className="space-y-4">
       {/* Top status bar — mono, very thin */}
@@ -69,6 +77,50 @@ export function SiteHeader({ activePath }: Props) {
               </Link>
             )
           })}
+
+          {/* build ▾ — groups the @gitbounty/* dev tools */}
+          <div
+            className="relative"
+            onMouseEnter={() => setBuildOpen(true)}
+            onMouseLeave={() => setBuildOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setBuildOpen((v) => !v)}
+              aria-expanded={buildOpen}
+              className={`px-3 py-1.5 rounded transition flex items-center gap-1 ${
+                buildActive || buildOpen
+                  ? 'bg-accent/10 text-accent'
+                  : 'text-muted hover:text-primary hover:bg-border/40'
+              }`}
+            >
+              build
+              <span className={`text-[10px] transition-transform ${buildOpen ? 'rotate-180' : ''}`}>
+                ▾
+              </span>
+            </button>
+
+            {buildOpen && (
+              <div className="absolute right-0 top-full mt-1 w-60 rounded-lg border border-border bg-surface shadow-lg z-50 p-1">
+                {BUILD_LINKS.map((link) => {
+                  const isActive = activePath === link.href
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setBuildOpen(false)}
+                      className={`block rounded px-3 py-2 transition ${
+                        isActive ? 'bg-accent/10 text-accent' : 'hover:bg-border/40'
+                      }`}
+                    >
+                      <span className={isActive ? 'text-accent' : 'text-primary'}>{link.label}</span>
+                      <span className="block text-[11px] text-muted mt-0.5">{link.desc}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </nav>
 
         <div className="flex items-center gap-2">
