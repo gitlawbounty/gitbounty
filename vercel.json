@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/snapshot", "schedule": "0 0 * * *" },
     { "path": "/api/cron/twitter-bounty-alerts", "schedule": "0 9 * * *" },
-    { "path": "/api/cron/twitter-persona-picks", "schedule": "0 12 * * 1" }
+    { "path": "/api/cron/twitter-persona-picks", "schedule": "0 12 * * 1" },
+    { "path": "/api/cron/persona-snapshot", "schedule": "0 12 * * 1" }
   ]
 }
