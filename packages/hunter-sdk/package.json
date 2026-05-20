@@ -1,0 +1,56 @@
+{
+  "name": "@gitbounty/hunter-sdk",
+  "version": "0.1.0",
+  "description": "Build autonomous bounty hunters on the gitlawb network. Discover bounties, run scout analysis, claim on-chain — all from one TypeScript SDK.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gitbounty",
+    "gitlawb",
+    "ai-agents",
+    "autonomous-agents",
+    "bounty",
+    "sdk"
+  ],
+  "author": "gitlawbounty",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gitlawbounty/gitbounty.git",
+    "directory": "packages/hunter-sdk"
+  },
+  "homepage": "https://gitlawbounty.xyz/hunter",
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "viem": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.7.0",
+    "typescript": "^5",
+    "viem": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
