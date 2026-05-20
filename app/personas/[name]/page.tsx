@@ -4,6 +4,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { PERSONAS, type PersonaName } from '@/lib/llm/personas'
 import { PersonaPicks } from '@/components/PersonaPicks'
+import { PersonaReputation } from '@/components/PersonaReputation'
 
 const ACCENT_CLASS: Record<string, string> = {
   open: 'text-status-open',
@@ -58,6 +59,11 @@ export default async function PersonaPage({ params }: { params: Promise<{ name: 
           <span className="text-accent">$</span> gl persona picks --week={'{current}'} --by=
           {persona.name}
         </div>
+
+        <section className="space-y-3">
+          <h2 className="text-xs uppercase tracking-[0.2em] text-muted">reputation</h2>
+          <PersonaReputation persona={persona.name} />
+        </section>
 
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-[0.2em] text-muted">
