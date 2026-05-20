@@ -21,4 +21,14 @@ describe('scorePick', () => {
     expect(STATUS_POINTS.completed).toBe(1)
     expect(STATUS_POINTS.disputed).toBe(-0.3)
   })
+  it('amplifies losses by confidence', () => {
+    expect(scorePick('cancelled', 0.5)).toBeCloseTo(-0.25)
+  })
+  it('clamps out-of-range confidence', () => {
+    expect(scorePick('completed', 5)).toBeCloseTo(1.0)
+    expect(scorePick('completed', -3)).toBeCloseTo(0)
+  })
+  it('treats NaN confidence as zero', () => {
+    expect(scorePick('completed', NaN)).toBe(0)
+  })
 })

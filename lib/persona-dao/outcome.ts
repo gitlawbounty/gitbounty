@@ -15,6 +15,6 @@ export const STATUS_POINTS: Record<OffChainStatus, number> = {
 /** Confidence-weighted score for one pick. Confidence is how much the persona
  *  staked on the call — it amplifies both wins and losses. */
 export function scorePick(status: OffChainStatus, confidence: number): number {
-  const c = Math.max(0, Math.min(1, confidence))
+  const c = Number.isFinite(confidence) ? Math.max(0, Math.min(1, confidence)) : 0
   return STATUS_POINTS[status] * c
 }

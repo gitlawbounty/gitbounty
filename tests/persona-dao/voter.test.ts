@@ -11,4 +11,7 @@ describe('voterHash', () => {
   it('returns a short hex digest', () => {
     expect(voterHash('1.2.3.4', 'Mozilla')).toMatch(/^[0-9a-f]{16}$/)
   })
+  it('differs for different user agents on the same ip', () => {
+    expect(voterHash('1.2.3.4', 'Mozilla')).not.toBe(voterHash('1.2.3.4', 'Chrome'))
+  })
 })
