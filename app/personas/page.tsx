@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { PERSONAS } from '@/lib/llm/personas'
 import { PersonaCard } from '@/components/PersonaCard'
+import { PersonaLeaderboard } from '@/components/PersonaLeaderboard'
 
 export const metadata = {
   title: 'personas',
@@ -32,6 +33,13 @@ export default function PersonasPage() {
         <div className="text-xs text-muted">
           <span className="text-accent">$</span> gl persona ls
         </div>
+
+        <section className="space-y-3">
+          <div className="text-xs text-muted">
+            <span className="text-accent">$</span> gl persona leaderboard
+          </div>
+          <PersonaLeaderboard />
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Object.values(PERSONAS).map((p) => (
