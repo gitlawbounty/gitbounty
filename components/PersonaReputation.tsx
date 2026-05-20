@@ -43,7 +43,7 @@ export function PersonaReputation({ persona }: { persona: string }) {
     <div className="border border-border rounded-lg p-5 space-y-4 bg-surface/40">
       <div className="flex items-baseline justify-between">
         <span className="text-[10px] uppercase tracking-[0.2em] text-muted">reputation · outcome score</span>
-        <span className="text-3xl font-bold text-accent">{rep ? rep.displayScore : 0}</span>
+        <span className="text-3xl font-bold text-accent">{hasData ? rep.displayScore : '—'}</span>
       </div>
 
       {hasData ? (

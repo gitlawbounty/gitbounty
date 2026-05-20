@@ -4,6 +4,7 @@ import { listWeeks, getOutcome, getVotes } from '@/lib/persona-dao/store'
 import { computeReputation } from '@/lib/persona-dao/reputation'
 import type { OffChainStatus } from '@/lib/persona-dao/types'
 
+export const dynamic = 'force-dynamic'
 export const revalidate = 60
 
 export async function GET(_req: Request, ctx: { params: Promise<{ name: string }> }) {
