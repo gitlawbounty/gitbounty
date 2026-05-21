@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const snapshot = await fetchOffChainBounties()
-  const boostedSet = await getActiveBoosts()
+  const boostedSet = await getActiveBoosts().catch(() => new Set<string>())
   const withBoost = snapshot.bounties.map((b) => ({ ...b, boosted: boostedSet.has(b.uuid) }))
   withBoost.sort((a, b) => Number(b.boosted) - Number(a.boosted))
   return NextResponse.json(
