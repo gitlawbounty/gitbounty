@@ -23,23 +23,33 @@ export function SpawnPersona() {
   async function create() {
     setBusy(true)
     setError(null)
-    const res = await fetch('/api/persona/custom', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name, specialty }),
-    })
-    const d = await res.json()
-    if (!res.ok) setError(d.error ?? 'failed (tier 2 $GITB required)')
-    else setPersona(d.persona)
-    setBusy(false)
+    try {
+      const res = await fetch('/api/persona/custom', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name, specialty }),
+      })
+      const d = await res.json()
+      if (!res.ok) setError(d.error ?? 'failed (tier 2 $GITB required)')
+      else setPersona(d.persona)
+    } catch {
+      setError('network error, try again')
+    } finally {
+      setBusy(false)
+    }
   }
 
   async function loadPicks() {
     setBusy(true)
-    const res = await fetch('/api/persona/custom/picks')
-    const d = await res.json()
-    setPicks(res.ok ? d.picks : [])
-    setBusy(false)
+    try {
+      const res = await fetch('/api/persona/custom/picks')
+      const d = await res.json()
+      setPicks(res.ok ? d.picks : [])
+    } catch {
+      setPicks([])
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (

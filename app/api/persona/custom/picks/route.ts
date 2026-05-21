@@ -14,7 +14,14 @@ export async function GET(req: Request) {
   const persona = await getCustomPersona(address)
   if (!persona) return NextResponse.json({ error: 'no custom persona yet' }, { status: 404 })
 
-  const snap = await fetchOffChainBounties()
-  const result = await generatePicksFromPrompt(persona.systemPrompt, persona.name, snap.bounties)
-  return NextResponse.json(result)
+  try {
+    const snap = await fetchOffChainBounties()
+    const result = await generatePicksFromPrompt(persona.systemPrompt, persona.name, snap.bounties)
+    return NextResponse.json(result)
+  } catch (err) {
+    return NextResponse.json(
+      { error: 'picks unavailable', detail: String(err).slice(0, 200) },
+      { status: 503, headers: { 'Retry-After': '120' } },
+    )
+  }
 }
