@@ -30,6 +30,8 @@ export function verifySession(token: string, secret: string): SessionPayload | n
   try {
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString()) as SessionPayload
     if (typeof payload.exp !== 'number' || payload.exp < Date.now()) return null
+    if (typeof payload.address !== 'string' || payload.address.length === 0) return null
+    if (payload.tier !== 0 && payload.tier !== 1 && payload.tier !== 2) return null
     return payload
   } catch {
     return null
