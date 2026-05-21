@@ -45,10 +45,10 @@ const VERSIONS: VersionEntry[] = [
   },
   {
     version: 'v0.5.0',
-    status: 'next',
-    title: 'persona dao + vote',
+    status: 'live',
+    title: 'persona dao + $GITB utility',
     summary:
-      'community votes which persona is calling it right · outcome-driven reputation per persona (completion-weighted) · anonymous weekly vote · governance layer for future token-weighted votes',
+      'outcome-driven reputation per persona (completion-weighted) · $GITB sign-in (proof-of-balance) → tier gating · tier 0 sees picks 48h late, tier 1+ instant · sqrt-weighted governance vote on which persona is calling it right · tier 1 boosts bounties · tier 2 spawns custom personas',
   },
   {
     version: 'v0.6.0',
