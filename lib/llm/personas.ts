@@ -249,3 +249,55 @@ Pick up to 3 bounties that fit your specialty. Skip if nothing matches your tast
     generatedAt: new Date().toISOString(),
   }
 }
+
+export interface PromptPicksResult {
+  label: string
+  week: string
+  picks: OffChainPersonaPick[]
+  commentary: string
+  generatedAt: string
+}
+
+/** Generate weekly picks from an arbitrary system prompt (used by custom personas). */
+export async function generatePicksFromPrompt(
+  systemPrompt: string,
+  label: string,
+  bounties: OffChainBounty[],
+): Promise<PromptPicksResult> {
+  const candidate = bounties.filter(
+    (b) => b.status === 'open' || b.status === 'claimed' || b.status === 'submitted',
+  )
+  if (candidate.length === 0) {
+    return {
+      label,
+      week: getIsoWeek(),
+      picks: [],
+      commentary: 'no open bounties this week. waiting.',
+      generatedAt: new Date().toISOString(),
+    }
+  }
+  const list = candidate
+    .map(
+      (b) =>
+        `${b.uuid} | ${b.title} | ${b.did}/${b.repoName} | reward ${b.amount} | status ${b.status} | age ${b.ageLabel}`,
+    )
+    .join('\n')
+  const userMsg = `Available bounties on the gitlawb network this week:\n\n${list}\n\nPick up to 3 bounties that fit your specialty. Skip if nothing matches. Output ONLY valid JSON:\n{\n  "picks": [ { "bountyId": "<uuid string>", "rank": 1, "reasoning": "<1-sentence, lowercase, in your voice>", "confidence": <0-1 number> } ],\n  "commentary": "<1-2 sentence weekly note in your voice>"\n}`
+  const raw = await llmCall({
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMsg },
+    ],
+    responseFormat: 'json',
+    maxTokens: 900,
+    temperature: 0.55,
+  })
+  const parsed = JSON.parse(raw) as { picks: OffChainPersonaPick[]; commentary: string }
+  return {
+    label,
+    week: getIsoWeek(),
+    picks: parsed.picks ?? [],
+    commentary: parsed.commentary ?? '',
+    generatedAt: new Date().toISOString(),
+  }
+}
