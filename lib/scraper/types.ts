@@ -23,6 +23,7 @@ export interface OffChainBounty {
   ageLabel: string            // "14d ago", "33d ago"
   url: string                 // https://gitlawb.com/bounties/{uuid}
   fetchedAt: string           // ISO when scraped
+  boosted?: boolean           // true if boosted by a tier-1 $GITB holder
 }
 
 export interface ScrapedBountySnapshot {

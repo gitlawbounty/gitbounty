@@ -1,4 +1,7 @@
+'use client'
+
 import type { OffChainBounty } from '@/lib/scraper/types'
+import { BoostButton } from '@/components/BoostButton'
 
 const STATUS_GLYPH: Record<string, string> = {
   open: '●',
@@ -59,11 +62,12 @@ export function OffChainBountyCard({ bounty }: { bounty: OffChainBounty }) {
             )}
           </div>
         </div>
-        <div className="text-right shrink-0">
+        <div className="text-right shrink-0 flex flex-col items-end gap-1.5">
           <div className="text-accent font-mono text-sm font-semibold">
             {bounty.amount || '—'}
           </div>
-          <div className="text-[10px] text-muted/70 mt-1 font-mono">via gitlawb.com ↗</div>
+          <div className="text-[10px] text-muted/70 font-mono">via gitlawb.com ↗</div>
+          <BoostButton bountyId={bounty.uuid} boosted={bounty.boosted} />
         </div>
       </div>
     </a>
