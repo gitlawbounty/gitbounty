@@ -3,6 +3,7 @@ import { formatTokenAmount } from '@/lib/format/amount'
 import type { Bounty } from '@/lib/bounty/types'
 import { BountyStatus } from '@/lib/bounty/types'
 import type { OffChainBounty } from '@/lib/scraper/types'
+import { isoWeek } from '@/lib/persona-dao/week'
 
 export type PersonaName = 'oracle' | 'circuit' | 'aurora' | 'wager'
 
@@ -105,11 +106,7 @@ export interface PersonaPicksResult {
 }
 
 function getIsoWeek(): string {
-  const now = new Date()
-  const start = new Date(now.getFullYear(), 0, 1)
-  const diff = (now.getTime() - start.getTime()) / 86_400_000
-  const week = Math.ceil((diff + start.getDay() + 1) / 7)
-  return `${now.getFullYear()}-W${String(week).padStart(2, '0')}`
+  return isoWeek()
 }
 
 export async function generatePicks(
