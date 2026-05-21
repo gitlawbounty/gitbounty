@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { fetchOffChainBounties } from '@/lib/scraper/gitlawb-scraper'
 import { commonHeaders } from '@/lib/api/serialize'
+import { getActiveBoosts } from '@/lib/boost/store'
 
 // Off-chain bounty snapshot from node.gitlawb.com/api/v1/bounties (JSON API).
 // Edge-cached 15s — short enough that new bounties surface in real-time on
@@ -10,10 +11,16 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const snapshot = await fetchOffChainBounties()
-  return NextResponse.json(snapshot, {
-    headers: {
-      ...commonHeaders('rpc'),
-      'Cache-Control': 's-maxage=15, stale-while-revalidate=60',
+  const boostedSet = await getActiveBoosts()
+  const withBoost = snapshot.bounties.map((b) => ({ ...b, boosted: boostedSet.has(b.uuid) }))
+  withBoost.sort((a, b) => Number(b.boosted) - Number(a.boosted))
+  return NextResponse.json(
+    { ...snapshot, bounties: withBoost },
+    {
+      headers: {
+        ...commonHeaders('rpc'),
+        'Cache-Control': 's-maxage=15, stale-while-revalidate=60',
+      },
     },
-  })
+  )
 }
