@@ -4,6 +4,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { PERSONAS } from '@/lib/llm/personas'
 import { PersonaCard } from '@/components/PersonaCard'
 import { PersonaLeaderboard } from '@/components/PersonaLeaderboard'
+import { SpawnPersona } from '@/components/SpawnPersona'
 
 export const metadata = {
   title: 'personas',
@@ -46,6 +47,13 @@ export default function PersonasPage() {
             <PersonaCard key={p.name} persona={p} />
           ))}
         </div>
+
+        <section>
+          <div className="text-xs text-muted mb-3">
+            <span className="text-accent">$</span> gl persona spawn
+          </div>
+          <SpawnPersona />
+        </section>
 
         <div className="border-t border-border pt-6 text-xs text-muted space-y-2">
           <div>weekly picks generated on demand · cached at the edge ~1 hour.</div>
