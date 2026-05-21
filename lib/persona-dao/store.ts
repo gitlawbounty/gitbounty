@@ -61,3 +61,28 @@ export async function castVote(
   const total = await r.incr(votesKey(week, persona))
   return { ok: true, total }
 }
+
+const wVotesKey = (week: string, persona: PersonaName) => `wvotes:${week}:${persona}`
+const wVoteFlagKey = (week: string, persona: PersonaName, addr: string) =>
+  `wvote:${week}:${persona}:${addr.toLowerCase()}`
+
+export async function getWeightedVotes(week: string, persona: PersonaName): Promise<number> {
+  return (await kv().get<number>(wVotesKey(week, persona))) ?? 0
+}
+
+/** Cast a weighted vote; one per wallet per persona per week. */
+export async function castWeightedVote(
+  week: string,
+  persona: PersonaName,
+  addr: string,
+  weight: number,
+): Promise<{ ok: boolean; total: number }> {
+  const r = kv()
+  const set = await r.set(wVoteFlagKey(week, persona, addr), weight, {
+    nx: true,
+    ex: 60 * 60 * 24 * 8,
+  })
+  if (set === null) return { ok: false, total: await getWeightedVotes(week, persona) }
+  const total = await r.incrby(wVotesKey(week, persona), weight)
+  return { ok: true, total }
+}
