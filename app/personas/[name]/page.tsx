@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { PERSONAS, type PersonaName } from '@/lib/llm/personas'
 import { PersonaPicks } from '@/components/PersonaPicks'
 import { PersonaReputation } from '@/components/PersonaReputation'
+import { GitbAuthButton } from '@/components/GitbAuthButton'
 
 const ACCENT_CLASS: Record<string, string> = {
   open: 'text-status-open',
@@ -62,6 +63,7 @@ export default async function PersonaPage({ params }: { params: Promise<{ name: 
 
         <section className="space-y-3">
           <h2 className="text-xs uppercase tracking-[0.2em] text-muted">reputation</h2>
+          <GitbAuthButton />
           <PersonaReputation persona={persona.name} />
         </section>
 
