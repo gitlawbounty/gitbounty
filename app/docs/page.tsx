@@ -362,21 +362,20 @@ export default function DocsPage() {
 
         <section className="space-y-3">
           <h2 className="text-base font-semibold uppercase">
-            <span className="text-accent">{'> '}</span>bankrbot-compatible skills
+            <span className="text-accent">{'> '}</span>agent skills
           </h2>
           <div className="text-sm text-muted">
-            gitbounty implements the{' '}
+            each capability is documented at{' '}
+            <code className="text-accent">/skills/*</code> in the{' '}
             <a
-              href="https://github.com/BankrBot/skills"
+              href="https://github.com/gitlawbounty/gitbounty"
               target="_blank"
               rel="noopener noreferrer"
               className="text-accent hover:underline"
             >
-              BankrBot/skills
+              github repo
             </a>{' '}
-            format. each capability is documented at{' '}
-            <code className="text-accent">/skills/*</code> in our repo — agents can discover &
-            invoke programmatically.
+            — agents can discover & invoke programmatically.
           </div>
         </section>
 

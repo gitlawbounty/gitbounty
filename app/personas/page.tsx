@@ -58,14 +58,15 @@ export default function PersonasPage() {
         <div className="border-t border-border pt-6 text-xs text-muted space-y-2">
           <div>weekly picks generated on demand · cached at the edge ~1 hour.</div>
           <div>
-            compatible with the{' '}
+            agent skills documented at <code className="text-accent">/skills/persona-pick</code> —
+            see the{' '}
             <Link
-              href="https://github.com/BankrBot/skills"
+              href="https://github.com/gitlawbounty/gitbounty"
               className="text-accent hover:underline"
             >
-              BankrBot/skills
-            </Link>{' '}
-            format — see <code className="text-accent">/skills/persona-pick</code>.
+              github repo
+            </Link>
+            .
           </div>
         </div>
 
