@@ -1,99 +1,58 @@
 ---
-name: bounty-hunter
-description: Use to autonomously hunt gitbounty bounties on the gitlawb network. Each run discovers open bounties, scouts the best fit, drafts a solution plan, and reports it. Read-only by default.
+name: Bounty Hunter
+description: Discover open gitbounty bounties on the gitlawb network, scout the best fit, and draft a solution plan (read-only)
+var: ""
+tags: [dev, crypto]
 ---
+> **${var}** — skill or tag to bias toward (e.g. `rust`, `frontend`). If empty, considers all open bounties.
 
-# bounty-hunter
+Read `memory/MEMORY.md` for the operator's skills and interests, if present.
 
-Autonomous gitbounty hunter for the Aeon runtime. On each run it discovers open
-bounties on the gitlawb network, scouts the best fit with the gitbounty LLM
-scout, drafts a concrete solution plan, and reports it. Read-only by default: it
-never claims on-chain or submits without an explicit wallet step (see "Going
-live" below).
+## What this skill optimizes for
 
-Install into Aeon:
+One credible draft beats five shallow ones. Pick a single open bounty per run, scout it properly, and produce a plan a human could act on. This skill is **read-only**: it never claims or submits on-chain. It discovers, scouts, and drafts.
 
-```bash
-./add-skill github.com/gitlawbounty/gitbounty skills/aeon-bounty-hunter
-```
+## Steps
 
-Enable in `aeon.yml`:
-
-```yaml
-skills:
-  bounty-hunter:
-    enabled: true
-    schedule: "0 */6 * * *"   # every 6h, UTC
-    var: ""                    # optional: skill/tag filter, e.g. "rust" or "frontend"
-```
-
-## What you do each run
-
-You are an autonomous bounty hunter. The `var` input (if set) is the skill or
-tag to bias toward (e.g. `rust`, `frontend`). Empty means consider everything.
-
-1. **Discover.** Fetch open bounties from the live firehose:
+1. **Discover.** Fetch open bounties from the live firehose. Use the `www` host — the bare domain 307-redirects:
    ```bash
    curl -s https://www.gitlawbounty.xyz/api/bounties-offchain
    ```
-   Response shape: `{ meta, bounties: [...] }`. Each bounty has:
-   `uuid`, `title`, `did`, `repoOwner`, `repoName`, `amount`, `amountNumeric`,
-   `status`, `ageLabel`, `url`, `boosted`.
-   **Only consider bounties where `status === "open"`.** Skip claimed,
-   submitted, completed. If none are open, report "no open bounty this cycle"
-   and stop.
+   Response: `{ meta, bounties: [...] }`. Each bounty has `uuid`, `title`, `did`, `repoOwner`, `repoName`, `amount`, `amountNumeric`, `status`, `ageLabel`, `url`, `boosted`.
 
-   (The base URL must be `www.gitlawbounty.xyz` — the bare domain 307-redirects
-   and breaks. The on-chain `/api/bounties` endpoint is currently empty on
-   testnet, so use the off-chain firehose above.)
+   Keep only `status === "open"`. If none are open, log `BOUNTY_HUNTER_NO_OPEN` and end.
 
-2. **Scout the shortlist.** For the top candidates (bias by `var` and by
-   `amountNumeric`, and prefer `boosted: true`), pull the LLM scout analysis:
+2. **Scout the shortlist.** Bias by `${var}` and `amountNumeric`, prefer `boosted: true`. For the top few, pull the LLM scout analysis (difficulty, skills, alpha, pitfalls):
    ```bash
    curl -s https://www.gitlawbounty.xyz/api/scout/offchain/<uuid>
    ```
-   This returns difficulty, required skills, alpha rating, and pitfalls.
 
-3. **Pick one.** Choose the single best-fit open bounty: high skill overlap with
-   `var`, reasonable difficulty, no blocking pitfalls. If nothing fits, report
-   that and stop. Do not force a pick.
+3. **Pick one.** Best skill overlap with `${var}`, reasonable difficulty, no blocking pitfalls. If nothing fits, log `BOUNTY_HUNTER_NO_FIT` and end. Do not force a pick.
 
-4. **Draft the solution.** Read the bounty issue (`repoOwner` / `repoName` live
-   on the gitlawb network; `url` is the human page on gitlawb.com). Produce:
-   - root cause / what the issue is asking for
+4. **Draft the solution.** The repo (`repoOwner`/`repoName`) lives on the gitlawb network; `url` is the human page on gitlawb.com. Produce:
+   - root cause / what the issue asks for
    - the files you would touch and the change in each
-   - a draft patch or PR description in markdown, ready to paste
-   - a confidence score 1-5 on whether this PR would be accepted
+   - a draft PR description in markdown, ready to paste
+   - a confidence score 1-5 that this PR would be accepted
 
-5. **Report.** Send a short brief via the configured notification channel:
-   which bounty (uuid + title + amount), why you picked it, the scout's read,
-   your draft plan, and your confidence.
+5. **Report.** Save the brief to `articles/bounty-hunter-${today}.md` and send it via the configured notification channel:
+   ```
+   BOUNTY <uuid> · <title> · <amount>
+   fit: <why this one>
+   scout: difficulty=<x> alpha=<x> pitfalls=<...>
+   plan:
+     - <file>: <change>
+   draft PR:
+     <markdown PR body>
+   confidence: <1-5> — <one line>
+   ```
 
-## Output format
+## Rules
 
-```
-BOUNTY <uuid> · <title> · <amount>
-fit: <why this one>
-scout: difficulty=<x> alpha=<x> pitfalls=<...>
-plan:
-  - <file>: <change>
-draft PR:
-  <markdown PR body>
-confidence: <1-5> — <one line>
-```
-
-## Hard rules
-
-- **Read-only.** Never call `claimBounty`, `submitBounty`, or any on-chain
-  function. No wallet keys are used in this mode. You discover, scout, and draft.
-- **No fabrication.** If the firehose or scout endpoint is unreachable, say so
-  and skip. Never invent a bounty, a reward, or a plan.
-- **One bounty per run.** A single credible draft beats five shallow ones.
+- **Read-only.** Never call `claimBounty`, `submitBounty`, or any on-chain function. No wallet keys.
+- **No fabrication.** If the firehose or scout endpoint is unreachable, log the failure and end. Never invent a bounty, reward, or plan.
+- **One bounty per run.**
 
 ## Going live (later, gated)
 
-To actually claim and earn, the loop adds an on-chain step using
-`@gitbounty/hunter-sdk` (extend `BountyHunter`, provide a viem `walletClient`).
-That requires a funded wallet private key as a GitHub Actions secret and is a
-deliberate, separate decision. Keep this skill read-only until that gate is
-crossed.
+To actually claim and earn, add an on-chain step with `@gitbounty/hunter-sdk` (extend `BountyHunter`, provide a viem `walletClient`). That needs a funded private key as a GitHub Actions secret and is a deliberate, separate decision. Keep this skill read-only until then.
