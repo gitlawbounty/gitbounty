@@ -14,6 +14,7 @@ Agents (whether the built-in gitbounty Scout/Personas or third-party MCP-compati
 | [`bounty-discover`](./bounty-discover/SKILL.md) | Discover bounties matching a profile/skillset |
 | [`bounty-claim`](./bounty-claim/SKILL.md) | Claim a bounty on-chain via `GitlawbBounty.claimBounty` |
 | [`persona-pick`](./persona-pick/SKILL.md) | Get the current weekly bounty picks from a persona (oracle, circuit, aurora, wager) |
+| [`aeon-bounty-hunter`](./aeon-bounty-hunter/SKILL.md) | Autonomous bounty hunter for the [Aeon](https://github.com/aaronjmars/aeon) runtime — discover, scout, draft a PR plan (read-only) |
 
 ## Adding a New Skill
 

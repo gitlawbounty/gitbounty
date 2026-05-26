@@ -32,6 +32,14 @@ export function SiteFooter() {
           >
             twitter
           </a>
+          <a
+            href="https://github.com/gitlawbounty/gitbounty-skill-pack"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-accent"
+          >
+            aeon skill
+          </a>
         </div>
       </div>
 
@@ -47,7 +55,7 @@ export function SiteFooter() {
             0x8fc59d…0789
           </a>
         </span>
-        <span>v0.1.0-alpha · {new Date().getFullYear()} gitbounty</span>
+        <span>v0.5.0 · {new Date().getFullYear()} gitbounty</span>
       </div>
     </footer>
   )

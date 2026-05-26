@@ -44,7 +44,7 @@ export function SiteHeader({ activePath }: Props) {
     <header className="space-y-4">
       {/* Top status bar — mono, very thin */}
       <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.25em] text-muted">
-        <span>[ gitbounty terminal · v0.1.0-alpha ]</span>
+        <span>[ gitbounty terminal · v0.5.0 ]</span>
         <span className="flex items-center gap-2 text-accent">
           <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
           live · gitlawb network
